@@ -1,0 +1,5 @@
+/Users/katsumihisao/workspace/monodev/APItest/APItest/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/katsumihisao/workspace/monodev/APItest/APItest/bin/Debug/APItest.exe.mdb
+/Users/katsumihisao/workspace/monodev/APItest/APItest/bin/Debug/APItest.exe
+/Users/katsumihisao/workspace/monodev/APItest/APItest/obj/x86/Debug/APItest.exe
+/Users/katsumihisao/workspace/monodev/APItest/APItest/obj/x86/Debug/APItest.exe.mdb

@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vector", "Vector\Vector.csproj", "{AA9F188C-74CC-4F6F-82F8-BB8FCAB22C42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA9F188C-74CC-4F6F-82F8-BB8FCAB22C42}.Debug|x86.ActiveCfg = Debug|x86
+		{AA9F188C-74CC-4F6F-82F8-BB8FCAB22C42}.Debug|x86.Build.0 = Debug|x86
+		{AA9F188C-74CC-4F6F-82F8-BB8FCAB22C42}.Release|x86.ActiveCfg = Release|x86
+		{AA9F188C-74CC-4F6F-82F8-BB8FCAB22C42}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal

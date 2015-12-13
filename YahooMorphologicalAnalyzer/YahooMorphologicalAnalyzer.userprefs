@@ -1,0 +1,26 @@
+﻿<Properties StartupItem="YahooMorphologicalAnalyzer/YahooMorphologicalAnalyzer.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="YahooMorphologicalAnalyzer/Program.cs">
+    <Files>
+      <File FileName="../MyOauth2/MyOauth2/Program.cs" Line="1" Column="1" />
+      <File FileName="YahooMorphologicalAnalyzer/Program.cs" Line="22" Column="32" />
+      <File FileName="../../../Downloads/OAuth.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="YahooMorphologicalAnalyzer" expanded="True">
+            <Node name="Program.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

@@ -1,0 +1,5 @@
+/Users/katsumihisao/workspace/monodev/TestOauth2/TestOauth2/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/katsumihisao/workspace/monodev/TestOauth2/TestOauth2/bin/Debug/TestOauth2.exe.mdb
+/Users/katsumihisao/workspace/monodev/TestOauth2/TestOauth2/bin/Debug/TestOauth2.exe
+/Users/katsumihisao/workspace/monodev/TestOauth2/TestOauth2/obj/x86/Debug/TestOauth2.exe
+/Users/katsumihisao/workspace/monodev/TestOauth2/TestOauth2/obj/x86/Debug/TestOauth2.exe.mdb

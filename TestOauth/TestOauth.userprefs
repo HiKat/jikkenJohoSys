@@ -1,0 +1,13 @@
+﻿<Properties StartupItem="TestOauth/TestOauth.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="TestOauth/OAuthBase.cs">
+    <Files>
+      <File FileName="TestOauth/Program.cs" Line="16" Column="100" />
+      <File FileName="TestOauth/OAuthBase.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

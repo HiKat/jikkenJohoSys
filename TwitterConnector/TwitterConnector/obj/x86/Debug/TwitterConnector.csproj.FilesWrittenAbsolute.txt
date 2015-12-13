@@ -1,0 +1,6 @@
+/Users/katsumihisao/workspace/monodev/TwitterConnector/TwitterConnector/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/katsumihisao/workspace/monodev/TwitterConnector/TwitterConnector/bin/Debug/TwitterConnector.exe.mdb
+/Users/katsumihisao/workspace/monodev/TwitterConnector/TwitterConnector/bin/Debug/TwitterConnector.exe
+/Users/katsumihisao/workspace/monodev/TwitterConnector/TwitterConnector/obj/x86/Debug/TwitterConnector.exe
+/Users/katsumihisao/workspace/monodev/TwitterConnector/TwitterConnector/obj/x86/Debug/TwitterConnector.exe.mdb
+/Users/katsumihisao/workspace/monodev/TwitterConnector/TwitterConnector/bin/Debug/Newtonsoft.Json.dll

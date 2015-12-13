@@ -1,0 +1,10 @@
+c:\Users\a0138805\documents\visual studio 2013\Projects\test01\WordSegmentation\bin\Debug\WordSegmentation.dll
+c:\Users\a0138805\documents\visual studio 2013\Projects\test01\WordSegmentation\bin\Debug\WordSegmentation.pdb
+c:\Users\a0138805\documents\visual studio 2013\Projects\test01\WordSegmentation\obj\Debug\WordSegmentation.dll
+c:\Users\a0138805\documents\visual studio 2013\Projects\test01\WordSegmentation\obj\Debug\WordSegmentation.pdb
+C:\Users\a0138805\Documents\Visual Studio 2013\Projects\test01\WordSegmentation\obj\Debug\WordSegmentation.csprojResolveAssemblyReference.cache
+C:\Users\Hisao\Documents\Visual Studio 2013\Projects\test01\WordSegmentation\obj\Debug\WordSegmentation.csprojResolveAssemblyReference.cache
+C:\Users\Hisao\Documents\Visual Studio 2013\Projects\test01\WordSegmentation\obj\Debug\WordSegmentation.dll
+C:\Users\Hisao\Documents\Visual Studio 2013\Projects\test01\WordSegmentation\bin\Debug\WordSegmentation.dll
+C:\Users\Hisao\Documents\Visual Studio 2013\Projects\test01\WordSegmentation\bin\Debug\WordSegmentation.pdb
+C:\Users\Hisao\Documents\Visual Studio 2013\Projects\test01\WordSegmentation\obj\Debug\WordSegmentation.pdb

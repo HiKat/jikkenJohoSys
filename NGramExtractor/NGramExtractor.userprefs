@@ -1,0 +1,13 @@
+﻿<Properties StartupItem="NGramExtractor/NGramExtractor.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench>
+    <Files>
+      <File FileName="../YahooMorphologicalAnalyzer/YahooMorphologicalAnalyzer/Program.cs" Line="1" Column="1" />
+      <File FileName="NGramExtractor/Program.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

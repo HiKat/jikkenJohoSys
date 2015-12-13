@@ -1,0 +1,5 @@
+D:\TestOauth2\TestOauth2\obj\x86\Debug\TestOauth2.csprojResolveAssemblyReference.cache
+D:\TestOauth2\TestOauth2\bin\Debug\TestOauth2.exe
+D:\TestOauth2\TestOauth2\bin\Debug\TestOauth2.pdb
+D:\TestOauth2\TestOauth2\obj\x86\Debug\TestOauth2.exe
+D:\TestOauth2\TestOauth2\obj\x86\Debug\TestOauth2.pdb

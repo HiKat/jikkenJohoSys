@@ -1,0 +1,5 @@
+/Users/katsumihisao/workspace/monodev/BingSearchApi/BingSearchApi/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/katsumihisao/workspace/monodev/BingSearchApi/BingSearchApi/bin/Debug/BingSearchApi.exe.mdb
+/Users/katsumihisao/workspace/monodev/BingSearchApi/BingSearchApi/bin/Debug/BingSearchApi.exe
+/Users/katsumihisao/workspace/monodev/BingSearchApi/BingSearchApi/obj/x86/Debug/BingSearchApi.exe
+/Users/katsumihisao/workspace/monodev/BingSearchApi/BingSearchApi/obj/x86/Debug/BingSearchApi.exe.mdb

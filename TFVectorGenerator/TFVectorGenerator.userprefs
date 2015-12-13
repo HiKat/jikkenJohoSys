@@ -1,0 +1,12 @@
+﻿<Properties StartupItem="TFVectorGenerator/TFVectorGenerator.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="TFVectorGenerator/Program.cs">
+    <Files>
+      <File FileName="TFVectorGenerator/Program.cs" Line="21" Column="28" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

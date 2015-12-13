@@ -1,0 +1,1 @@
+c:\users\hisao\documents\visual studio 2013\Projects\NGramExtractor\NGramExtractor\bin\Debug\NGramExtractor.exe.config
