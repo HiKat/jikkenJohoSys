@@ -1,5 +1,0 @@
-/Users/katsumihisao/workspace/monodev/test/test/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/Users/katsumihisao/workspace/monodev/test/test/bin/Debug/test.exe.mdb
-/Users/katsumihisao/workspace/monodev/test/test/bin/Debug/test.exe
-/Users/katsumihisao/workspace/monodev/test/test/obj/x86/Debug/test.exe
-/Users/katsumihisao/workspace/monodev/test/test/obj/x86/Debug/test.exe.mdb

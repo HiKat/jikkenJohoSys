@@ -1,5 +1,0 @@
-/Users/katsumihisao/workspace/monodev/MyOauthIkaros/MyOauthIkaros/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/Users/katsumihisao/workspace/monodev/MyOauthIkaros/MyOauthIkaros/bin/Debug/MyOauthIkaros.exe.mdb
-/Users/katsumihisao/workspace/monodev/MyOauthIkaros/MyOauthIkaros/bin/Debug/MyOauthIkaros.exe
-/Users/katsumihisao/workspace/monodev/MyOauthIkaros/MyOauthIkaros/obj/x86/Debug/MyOauthIkaros.exe
-/Users/katsumihisao/workspace/monodev/MyOauthIkaros/MyOauthIkaros/obj/x86/Debug/MyOauthIkaros.exe.mdb

@@ -39,10 +39,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwitterJson.cs" />
     <Compile Include="TwitterOAuth.cs" />
+    <Compile Include="TwitterApi.cs" />
+    <Compile Include="Main.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
