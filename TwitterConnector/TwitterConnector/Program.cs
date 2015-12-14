@@ -82,9 +82,10 @@ namespace TwitterGetContent
 			TwitterConnector tc = new TwitterConnector (
 				                      auth.ConsumerKey, auth.ConsumerSecret, auth.AccessToken, 
 				                      auth.AccessTokenSecret, auth.UserId, auth.ScreenName);
-			//var usrTl = tc.GetUsrTimeline ("wsvqncxko4");
+			//var usrTl = tc.GetUsrTimeline ("nanjolno");
 			//var homeTl = tc.GetHomeTimeline ();
-			var mentions = tc.GetMentionsTimeline ();
+			//var mentions = tc.GetMentionsTimeline ();
+			//var idTweet = tc.GetTweet (674435882917584896);
 
 			//debug
 			Console.WriteLine ("debug end!");
@@ -109,9 +110,6 @@ namespace TwitterGetContent
 	//Authクラスのものを呼び出します.
 	public class TwitterConnector : Auth
 	{
-		//基本クラスのprotectedメソッドが使用可
-		//プロパティのScreenNameは継承
-
 		//コンストラクタ
 		public TwitterConnector (
 			string consumerKey, string consumerSecret, string accessToken, 
@@ -200,6 +198,7 @@ namespace TwitterGetContent
 			return resultList;
 			//=============================================================
 		}
+		//===================================================================================================
 
 		//最近の自身のホームタイムラインを取得するメソッド
 		//返り値：取得したツイートのリスト
@@ -278,8 +277,8 @@ namespace TwitterGetContent
 			}	
 			return resultList;
 			//=============================================================
-
 		}
+		//===================================================================================================
 
 		//指定したユーザのスクリーンネームのツイートを取得するメソッド
 		//返り値：取得したツイートのリスト
@@ -381,13 +380,85 @@ namespace TwitterGetContent
 		//===================================================================================================
 
 
-		//		//指定されたidのツイートを取得するメソッド
-		//		//id：ツイートID
-		//		//返り値：ツイート
-		//		public Tweet GetTweet (long id)
-		//		{
-		//
-		//		}
+		//指定されたidのツイートを取得するメソッド
+		//id：ツイートID
+		//返り値：ツイート
+		public Tweet GetTweet (long id)
+		{
+			string oauthNonce = GenNonce ();
+			string timeStamp = GenTimestamp ();
+
+			//署名作成=============================================================================================
+			//パラメータ==================
+			SortedDictionary<string, string> parameters = new SortedDictionary<string, string> ();
+			parameters.Add ("oauth_consumer_key", ConsumerKey);
+			parameters.Add ("oauth_signature_method", "HMAC-SHA1");
+			parameters.Add ("oauth_timestamp", timeStamp);
+			parameters.Add ("oauth_nonce", oauthNonce);
+			parameters.Add ("oauth_version", "1.0");
+			parameters.Add ("oauth_token", AccessToken);
+			parameters.Add ("id", id.ToString ());
+			//==========================
+
+			string signature = GenSignature ("GET", "https://api.twitter.com/1.1/statuses/show.json", parameters, ConsumerSecret, AccessTokenSecret);
+
+			//===================================================================================================
+
+			//ヘッダ作成===========================================================================================
+			string authHeader = string.Format (
+				                    "OAuth oauth_consumer_key=\"{0}\", " +
+				                    "oauth_nonce=\"{1}\", " +
+				                    "oauth_signature=\"{2}\", " +
+				                    "oauth_signature_method=\"{3}\", " +
+				                    "oauth_timestamp=\"{4}\", " +
+				                    "oauth_token=\"{5}\", " +
+				                    "oauth_version=\"{6}\""
+				//APIKeyなども形式的に念のため全てURLエンコードする
+				, Uri.EscapeDataString (ConsumerKey)
+				, Uri.EscapeDataString (oauthNonce)
+				, Uri.EscapeDataString (signature)
+				, Uri.EscapeDataString ("HMAC-SHA1")
+				, Uri.EscapeDataString (timeStamp)
+				, Uri.EscapeDataString (AccessToken)
+				, Uri.EscapeDataString ("1.0"));
+			//===================================================================================================
+
+
+			//get送信=======================================================
+			//パラメータinclude_rts=1は推奨値
+			string reqUrl = "https://api.twitter.com/1.1/statuses/show.json?&id=" + id.ToString ();
+			ServicePointManager.Expect100Continue = false;
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create (reqUrl) as HttpWebRequest;
+			req.Method = "GET";
+			req.ContentType = "application/x-www-form-urlencoded";
+			req.Host = "api.twitter.com";
+			req.Headers.Add ("Authorization", authHeader);
+
+			HttpWebResponse res = (HttpWebResponse)req.GetResponse ();
+			Stream resStream = res.GetResponseStream ();
+			StreamReader sr = new StreamReader (resStream);
+			//JSONデータを取得
+			string resultJson = sr.ReadToEnd ();
+			resStream.Close ();
+			sr.Close ();
+			//JSONデータのパース
+			var root = JsonConvert.DeserializeObject<RootObject> (resultJson);
+			User usr = new User (root.user.name, root.user.screen_name);
+			Tweet resultTweet = new Tweet ((long)root.id, root.text, usr);
+
+			//debug
+			Console.WriteLine ("");
+			Console.WriteLine (root.id);
+			Console.WriteLine (root.text);
+			Console.WriteLine (root.user.screen_name);
+			Console.WriteLine (root.user.name);
+			Console.WriteLine ("");
+
+			return resultTweet;
+			//=============================================================
+		}
+		//===================================================================================================
+				
 		//
 		//		//Twitterにpostするメソッド
 		//		//str：postする文字列
@@ -397,7 +468,7 @@ namespace TwitterGetContent
 		//		}
 		//	}
 		//
-		//
+
 		public class Tweet
 		{
 			//コンストラクタ
