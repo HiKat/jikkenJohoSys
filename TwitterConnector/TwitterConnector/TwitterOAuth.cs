@@ -31,7 +31,7 @@ namespace TwitterOAuth
 		//UNIXエポック時刻
 		private readonly static DateTime dtUnixEpoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-		protected string GenerateTimestamp ()
+		protected string GenTimestamp ()
 		{
 			//現在時刻からUNIXエポック時刻を引く
 			TimeSpan ts = DateTime.UtcNow - dtUnixEpoch;
@@ -71,6 +71,27 @@ namespace TwitterOAuth
 			return result.ToString ();
 		}
 		//========================================================================
+
+		//署名作成==================================================================================================
+		protected string GenSignature (
+			string method, string url, SortedDictionary<string, string> parameters, string conSec, string token)
+		{
+			//署名データ
+			string signatureData = 
+				method + "&" +
+				Uri.EscapeDataString (url) + "&" +
+				Uri.EscapeDataString (JoinParameters (parameters));	
+			//署名キー
+			string signatureKey = Uri.EscapeDataString (conSec) + "&" + Uri.EscapeDataString (token);
+			//ハッシュ関数生成
+			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
+			//暗号化
+			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
+			//ベース64エンコード
+			string signature = Convert.ToBase64String (bArray);
+			return signature;
+		}
+		//=========================================================================================================
 		//
 		//
 		//
@@ -123,7 +144,7 @@ namespace TwitterOAuth
 			//ランダム文字列生成
 			string oauthNonce = GenNonce ();
 			//タイムスタンプ生成
-			string timeStamp = GenerateTimestamp ();
+			string timeStamp = GenTimestamp ();
 
 			//署名作成=============================================================================================
 
@@ -137,19 +158,23 @@ namespace TwitterOAuth
 			//==========================
 
 			//==========================
-			//署名データ
-			string signatureData = 
-				"GET" + "&" +
-				Uri.EscapeDataString ("https://api.twitter.com/oauth/request_token") + "&" +
-				Uri.EscapeDataString (JoinParameters (parameters));	
-			//署名キー
-			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&";
-			//ハッシュ関数生成
-			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-			//暗号化
-			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-			//ベース64エンコード
-			string signature = Convert.ToBase64String (bArray);
+			string signature = GenSignature ("GET", "https://api.twitter.com/oauth/request_token", parameters, ConsumerSecret, "");
+
+//			//<参考> 署名作成の中身======
+//			//署名データ
+//			string signatureData = 
+//				"GET" + "&" +
+//				Uri.EscapeDataString ("https://api.twitter.com/oauth/request_token") + "&" +
+//				Uri.EscapeDataString (JoinParameters (parameters));	
+//			//署名キー
+//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&";
+//			//ハッシュ関数生成
+//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
+//			//暗号化
+//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
+//			//ベース64エンコード
+//			string signature = Convert.ToBase64String (bArray);
+//			//=========================
 			//==========================
 
 			//署名もパラメータに追加
@@ -194,7 +219,7 @@ namespace TwitterOAuth
 			//ランダム文字列生成
 			string oauthNonce = GenNonce ();
 			//タイムスタンプ生成
-			string timeStamp = GenerateTimestamp ();
+			string timeStamp = GenTimestamp ();
 
 			//パラメータ==================
 			SortedDictionary<string, string> parameters = new SortedDictionary<string, string> ();
@@ -208,19 +233,23 @@ namespace TwitterOAuth
 			//==========================
 
 			//==========================
-			//署名データ
-			string signatureData = 
-				"GET" + "&" +
-				Uri.EscapeDataString ("https://api.twitter.com/oauth/access_token") + "&" +
-				Uri.EscapeDataString (JoinParameters (parameters));	
-			//署名キー
-			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&" + Uri.EscapeDataString (RequestTokenSecret);
-			//ハッシュ関数生成
-			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-			//暗号化
-			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-			//ベース64エンコード
-			string signature = Convert.ToBase64String (bArray);
+			string signature = GenSignature ("GET", "https://api.twitter.com/oauth/access_token", parameters, ConsumerSecret, RequestTokenSecret);
+
+//			//<参考> 署名作成の中身======
+//			//署名データ
+//			string signatureData = 
+//				"GET" + "&" +
+//				Uri.EscapeDataString ("https://api.twitter.com/oauth/access_token") + "&" +
+//				Uri.EscapeDataString (JoinParameters (parameters));	
+//			//署名キー
+//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&" + Uri.EscapeDataString (RequestTokenSecret);
+//			//ハッシュ関数生成
+//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
+//			//暗号化
+//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
+//			//ベース64エンコード
+//			string signature = Convert.ToBase64String (bArray);
+//			//========================
 			//==========================
 
 			//署名もパラメータに追加

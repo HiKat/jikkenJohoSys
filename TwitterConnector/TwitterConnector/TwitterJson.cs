@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace TwitterUserTimelineJson
+//Tweet本体はRootObjectからなり、タイムラインはList<RootObject>
+//として表されます.
+namespace TwitterTweetJson
 {
 
 	public class Description
