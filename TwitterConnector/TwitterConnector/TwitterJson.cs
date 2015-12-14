@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace TwitterJson
+namespace TwitterUserTimelineJson
 {
 
 	public class Description
@@ -15,11 +15,14 @@ namespace TwitterJson
 		public Description description { get; set; }
 	}
 
+	//ユーザー情報
 	public class User
 	{
 		public object id { get; set; }
 		public string id_str { get; set; }
+		//ユーザー名
 		public string name { get; set; }
+		//スクリーンネーム
 		public string screen_name { get; set; }
 		public string location { get; set; }
 		public string description { get; set; }
@@ -403,11 +406,14 @@ namespace TwitterJson
 		public List<Medium7> media { get; set; }
 	}
 
+	//ツイート本体
 	public class RootObject
 	{
 		public string created_at { get; set; }
+		//ツイートID
 		public object id { get; set; }
 		public string id_str { get; set; }
+		//ツイート内容
 		public string text { get; set; }
 		public string source { get; set; }
 		public bool truncated { get; set; }
@@ -416,6 +422,7 @@ namespace TwitterJson
 		public object in_reply_to_user_id { get; set; }
 		public object in_reply_to_user_id_str { get; set; }
 		public object in_reply_to_screen_name { get; set; }
+		//ツイートユーザー情報
 		public User user { get; set; }
 		public object geo { get; set; }
 		public object coordinates { get; set; }

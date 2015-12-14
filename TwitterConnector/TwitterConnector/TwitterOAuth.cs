@@ -10,11 +10,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
 
-
-
-
-
-
 //## 留意点
 //* 署名作成時のパラメータはキーがアルファベット順に並んでいる必要がある
 //* callbackURLを指定している場合はpinコード画面が出ずレスポンスからpinを入手する必要がある.

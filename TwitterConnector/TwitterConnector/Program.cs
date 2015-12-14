@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
 using TwitterOAuth;
-using TwitterJson;
+using TwitterUserTimelineJson;
 
 namespace TwitterGetContent
 {
@@ -82,7 +82,7 @@ namespace TwitterGetContent
 			TwitterConnector tc = new TwitterConnector (
 				                      auth.ConsumerKey, auth.ConsumerSecret, auth.AccessToken, 
 				                      auth.AccessTokenSecret, auth.UserId, auth.ScreenName);
-			string myTL = tc.GetTimeLine ();
+			var myTL = tc.GetUsrTimeLine ("wsvqncxko4");
 			//List<Tweet> myTL = tc.GetUserTimeLine();
 
 			//debug
@@ -106,7 +106,9 @@ namespace TwitterGetContent
 		public TwitterConnector (
 			string consumerKey, string consumerSecret, string accessToken, 
 			string accessTokenSecret, string userId, string screenName)
-			: base (consumerKey, consumerSecret, accessToken, accessTokenSecret, userId, screenName){}
+			: base (consumerKey, consumerSecret, accessToken, accessTokenSecret, userId, screenName)
+		{
+		}
 		
 		//		//最近の自身へのメンションを取得するメソッド
 		//		//返り値：取得したメンションのリスト
@@ -129,7 +131,7 @@ namespace TwitterGetContent
 		//
 
 		//タイムライン取得======================================================================================
-		public string GetTimeLine ()
+		public List<Tweet> GetUsrTimeLine (string screenName)
 		{
 			//ランダム文字列生成
 			string oauthNonce = GenNonce ();
@@ -148,7 +150,7 @@ namespace TwitterGetContent
 			parameters.Add ("oauth_nonce", oauthNonce);
 			parameters.Add ("oauth_version", "1.0");
 			parameters.Add ("oauth_token", AccessToken);
-			parameters.Add ("screen_name", ScreenName);
+			parameters.Add ("screen_name", screenName);
 			//==========================
 
 			//==========================
@@ -190,7 +192,7 @@ namespace TwitterGetContent
 
 
 			//get送信=======================================================
-			string reqUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json?&screen_name=" + ScreenName;
+			string reqUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json?&screen_name=" + screenName;
 			ServicePointManager.Expect100Continue = false;
 			HttpWebRequest req = (HttpWebRequest)WebRequest.Create (reqUrl) as HttpWebRequest;
 			req.Method = "GET";
@@ -213,22 +215,20 @@ namespace TwitterGetContent
 			//debug
 			Console.WriteLine (resultJson);
 
-			var root = JsonConvert.DeserializeObject<RootObject>(resultJson);
-			Console.WriteLine (root.text);
-
-
-
-
-
-			//			WebRequest req = WebRequest.Create ("https://api.twitter.com/oauth/access_token?" + JoinParameters (parameters));
-			//			WebResponse res = req.GetResponse ();
-			//			Stream stream = res.GetResponseStream ();
-			//			StreamReader reader = new StreamReader (stream);
-			//			string response = reader.ReadToEnd ();
-			//			reader.Close ();
-			//			stream.Close ();
-
-			return "end";
+			var root = JsonConvert.DeserializeObject<List<RootObject>> (resultJson);
+			List<Tweet> resultList = new List<Tweet> ();
+			foreach (RootObject r in root) {
+				Console.WriteLine (r.id);
+				Console.WriteLine (r.text);
+				Console.WriteLine (r.user.screen_name);
+				Console.WriteLine (r.user.name);
+				Console.WriteLine ("");
+				User usr = new User (r.user.name, r.user.screen_name);
+				Tweet tweet = new Tweet ((long)r.id, r.text, usr);
+				resultList.Add (tweet);
+			}
+	
+			return resultList;
 			//=============================================================
 		}
 		//===================================================================================================
@@ -251,7 +251,7 @@ namespace TwitterGetContent
 		//	}
 		//
 		//
-		class Tweet
+		public class Tweet
 		{
 			//コンストラクタ
 			//id：ツイートID
@@ -275,7 +275,7 @@ namespace TwitterGetContent
 		
 		}
 
-		class User
+		public class User
 		{
 			//コンストラクタ
 			//name：ユーザ名
