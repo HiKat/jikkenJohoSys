@@ -370,57 +370,111 @@ namespace TwitterApi
 		}
 		//===================================================================================================
 
-		//
-		//		//Twitterにpostするメソッド
-		//		//str：postする文字列
-		//		public void Update (string str)
-		//		{
-		//
-		//		}
-		//	}
-		//
 
-		public class Tweet
+		//Twitterにpostするメソッド
+		//str：postする文字列
+		public void Update (string str)
 		{
-			//コンストラクタ
-			//id：ツイートID
-			//text：ツイート内容
-			//user：ツイートユーザ
-			public Tweet (long id, string text, User user)
-			{
-				Id = id;
-				Text = text;
-				User = user;
+			string oauthNonce = GenNonce ();
+			string timeStamp = GenTimestamp ();
+			string encodedTweet = Uri.EscapeDataString (str);
+
+			//署名作成=============================================================================================
+			//パラメータ==================
+			SortedDictionary<string, string> parameters = new SortedDictionary<string, string> ();
+			parameters.Add ("oauth_consumer_key", ConsumerKey);
+			parameters.Add ("oauth_signature_method", "HMAC-SHA1");
+			parameters.Add ("oauth_timestamp", timeStamp);
+			parameters.Add ("oauth_nonce", oauthNonce);
+			parameters.Add ("oauth_version", "1.0");
+			parameters.Add ("oauth_token", AccessToken);
+			parameters.Add ("status", encodedTweet);
+			//==========================
+
+			string signature = GenSignature ("POST", "https://api.twitter.com/1.1/statuses/update.json", parameters, ConsumerSecret, AccessTokenSecret);
+
+			//===================================================================================================
+
+			//ヘッダ作成===========================================================================================
+			string authHeader = string.Format (
+				                    "OAuth oauth_consumer_key=\"{0}\", " +
+				                    "oauth_nonce=\"{1}\", " +
+				                    "oauth_signature=\"{2}\", " +
+				                    "oauth_signature_method=\"{3}\", " +
+				                    "oauth_timestamp=\"{4}\", " +
+				                    "oauth_token=\"{5}\", " +
+				                    "oauth_version=\"{6}\""
+				//APIKeyなども形式的に念のため全てURLエンコードする
+				, Uri.EscapeDataString (ConsumerKey)
+				, Uri.EscapeDataString (oauthNonce)
+				, Uri.EscapeDataString (signature)
+				, Uri.EscapeDataString ("HMAC-SHA1")
+				, Uri.EscapeDataString (timeStamp)
+				, Uri.EscapeDataString (AccessToken)
+				, Uri.EscapeDataString ("1.0"));
+			//===================================================================================================
 
 
-			}
-
-			//プロパティ
-			public long Id { get; protected set; }
-
-			public string Text{ get; protected set; }
-
-			public User User{ get; protected set; }
-
+			//post送信======================================================
+			string reqUrl = "https://api.twitter.com/1.1/statuses/update.json";
+			Uri uri = new Uri (reqUrl);
+			//POSTリクエストを作成
+			string postData = "status=" + encodedTweet;
+			System.Net.WebClient wc = new System.Net.WebClient ();
+			ServicePointManager.Expect100Continue = false;
+			//文字コードを指定する	
+			wc.Encoding = Encoding.GetEncoding ("utf-8");
+			//ヘッダにContent-Typeを加える
+			wc.Headers.Add ("Content-Type", "application/x-www-form-urlencoded");
+			wc.Headers.Add ("Authorization", authHeader);
+			string res = wc.UploadString (uri, postData);
+			//=============================================================
 		}
-
-		public class User
-		{
-			//コンストラクタ
-			//name：ユーザ名
-			//screenName：ユーザのスクリーン名
-			public User (string name, string screenName)
-			{
-				Name = name;
-				ScreenName = screenName;
-			}
-
-			//プロパティ
-			public string Name{ get; private set; }
-
-			public string ScreenName{ get; private set; }
-
-		}
+		//===================================================================================================
 
 	}
+
+	public class Tweet
+	{
+		//コンストラクタ
+		//id：ツイートID
+		//text：ツイート内容
+		//user：ツイートユーザ
+		public Tweet (long id, string text, User user)
+		{
+			Id = id;
+			Text = text;
+			User = user;
+
+
+		}
+
+		//プロパティ
+		public long Id { get; protected set; }
+
+		public string Text{ get; protected set; }
+
+		public User User{ get; protected set; }
+
+	}
+
+	public class User
+	{
+		//コンストラクタ
+		//name：ユーザ名
+		//screenName：ユーザのスクリーン名
+		public User (string name, string screenName)
+		{
+			Name = name;
+			ScreenName = screenName;
+		}
+
+		//プロパティ
+		public string Name{ get; private set; }
+
+		public string ScreenName{ get; private set; }
+
+	}
+
 }
+

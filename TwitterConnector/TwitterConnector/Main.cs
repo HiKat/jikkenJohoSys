@@ -1,5 +1,5 @@
 ﻿using System;
-//using System.Text;
+using System.Text;
 //using System.Collections;
 //using System.Collections.Generic;
 //using System.Net.Http;
@@ -70,17 +70,15 @@ namespace Main
 			Console.WriteLine ("debug start! Enter return key!");
 			Console.ReadKey ();
 
-			//auth.GetTimeLine ();
-
-			//タイムライン取得例
-
 			TwitterConnector tc = new TwitterConnector (
 				                      auth.ConsumerKey, auth.ConsumerSecret, auth.AccessToken, 
 				                      auth.AccessTokenSecret, auth.UserId, auth.ScreenName);
 			var usrTl = tc.GetUsrTimeline ("nanjolno");
-			//var homeTl = tc.GetHomeTimeline ();
-			//var mentions = tc.GetMentionsTimeline ();
+			var homeTl = tc.GetHomeTimeline ();
 			var idTweet = tc.GetTweet (674435882917584896);
+			var myMentions = tc.GetMentionsTimeline ();
+			string random = Convert.ToBase64String (new ASCIIEncoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
+			tc.Update ("投稿form TwitterAPI v1.1 " + random);
 
 			//debug
 			Console.WriteLine ("debug end! Enter return key!");

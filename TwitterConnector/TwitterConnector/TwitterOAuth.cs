@@ -43,6 +43,7 @@ namespace TwitterOAuth
 		protected string GenNonce ()
 		{
 			string result = Convert.ToBase64String (new ASCIIEncoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
+			string res2 = Convert.ToBase64String (new UTF8Encoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
 			return result;
 		}
 		//===================================================
