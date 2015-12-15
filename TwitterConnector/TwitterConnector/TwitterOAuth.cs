@@ -11,8 +11,6 @@ using System.Net.Http;
 using Newtonsoft.Json;
 //* 署名作成時のパラメータはキーがアルファベット順に並んでいる必要があります
 //* callbackURLを指定している場合はpinコード画面が出ずレスポンスからpinを入手する必要があります.
-//* AccessToken及びAccessTokenSecretは、デベロッパは公開せずwebアプリケーションのユーザ
-//に取得してもらう.
 //* URLエンコードについてはUri.EscapeDataStringを使用
 //（HttpUtility.UrlEncodeメソッドでは%20が+に変換されるなど）
 //* レスポンスの仕様変更に注意
