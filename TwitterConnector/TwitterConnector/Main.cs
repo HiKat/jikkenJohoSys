@@ -77,7 +77,7 @@ namespace Main
 			Console.ReadKey ();
 
 			Console.WriteLine ("Enter some tweet id you want to get");
-			Console.WriteLine ("e.g)id:676591923931406340");
+			Console.WriteLine ("e.g)id:669840927989456896");
 			Console.Write ("tweet id:");
 			string id = Console.ReadLine ();
 			tc.GetTweet (long.Parse(id));
