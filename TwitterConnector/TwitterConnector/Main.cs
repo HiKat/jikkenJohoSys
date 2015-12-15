@@ -96,7 +96,6 @@ namespace Main
 
 			Console.WriteLine ("Please enter some text to post. (Caution!: This text will post your time line!)");
 			Console.Write ("text:");
-			Console.ReadKey (); 
 			string text = Console.ReadLine ();
 			tc.Update (text);
 			Console.WriteLine ("=====================================================================");
