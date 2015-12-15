@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-
 //Tweet本体はRootObjectからなり、タイムラインはList<RootObject>
 //として表されます.
 //http://json2csharp.com/#

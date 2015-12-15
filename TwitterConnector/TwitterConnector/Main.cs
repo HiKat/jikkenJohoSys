@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Text;
-//using System.Collections;
-//using System.Collections.Generic;
-//using System.Net.Http;
 using TwitterOAuth;
 using TwitterTweetJson;
 using TwitterApi;
 
+//コンソール上で動作する簡単なTwitterクライアントです
+//最低限の実装なのでtry~catchの類は書いていません.
 namespace Main
 {
 	
@@ -14,81 +13,92 @@ namespace Main
 	{
 		static void Main (string[] args)
 		{
-//			//リクエストトークン取得====================================================================
-//			//ApiTestNoCallback
-//			//callbackurl設定なしアカウント
-//			const string CONSUMER_KEY = "8369eInu3C2YzkAgx3YrWbXMJ";
-//			const string CONSUMER_SECRET = "8uWxX1iTTR1yxdA25RqlQxxn82tDipnsC5482UU3Etm3EpwQGn";
-//
-//			Auth auth = new Auth (CONSUMER_KEY, CONSUMER_SECRET);
-//
-//			// リクエストトークンを取得する
-//			auth.GetRequestToken ();
-//			Console.WriteLine ("RequestToken: " + auth.RequestToken);
-//			Console.WriteLine ("RequestTokenSecret: " + auth.RequestTokenSecret);
-//
-//			//ユーザーにRequestTokenを認証してもらう
-//			Console.WriteLine ("Authentication URL：");
-//			Console.WriteLine ("https://api.twitter.com/oauth/authorize?oauth_token=" + auth.RequestToken);
-//			Console.Write ("PIN：");
-//			string pin = Console.ReadLine ().Trim ();
-//			// アクセストークンを取得する
-//			auth.GetAccessToken (pin);
-//
-//			// 結果を表示する
-//			Console.WriteLine ("AccessToken: " + auth.AccessToken);
-//			Console.WriteLine ("AccessTokenSecret: " + auth.AccessTokenSecret);
-//			Console.WriteLine ("UserId: " + auth.UserId);
-//			Console.WriteLine ("ScreenName: " + auth.ScreenName);
-//			//=====================================================================================
+			//リクエストトークン取得====================================================================
+			//ApiTestNoCallback
+			//callbackurl設定なしアカウント
+			const string CONSUMER_KEY = "8369eInu3C2YzkAgx3YrWbXMJ";
+			const string CONSUMER_SECRET = "8uWxX1iTTR1yxdA25RqlQxxn82tDipnsC5482UU3Etm3EpwQGn";
 
+			Auth auth = new Auth (CONSUMER_KEY, CONSUMER_SECRET);
 
-			//デバッグ用================================================================================
-			const string CONSUMER_KEY = "IKBVUl9gifsSDrqEOeGBYEv3c";
-			const string CONSUMER_SECRET = "6qqHzsX24YiyRyKHfeOuV4vAdPobKkPvChxgid07QTQJsnfapu";
-			const string ACCESS_TOKEN = "4452190160-YwOa1h9VQUNRRYhp2MMMXMDssSyeEO9DcsDgydQ";
-			const string ACCESS_TOKEN_SECRET = "YYT4zmqKMd7w6W0k2SulA5yHPByQ2KCFAmRK1NFYetfIk";
-			const string USER_ID = "4452190160";
-			const string SCREEN_NAME = "apiTestJohoSys";
-		
-			Auth auth = new Auth (
-				            CONSUMER_KEY,
-				            CONSUMER_SECRET,
-				            ACCESS_TOKEN,
-				            ACCESS_TOKEN_SECRET,
-				            USER_ID,
-				            SCREEN_NAME
-			            );
-			//=======================================================================================
+			// リクエストトークンを取得する
+			auth.GetRequestToken ();
 
+			//ユーザーにRequestTokenを認証してもらう
+			Console.WriteLine ("Please jump to the AuthenticationURL：");
+			Console.WriteLine ("https://api.twitter.com/oauth/authorize?oauth_token=" + auth.RequestToken);
+			Console.Write ("Enter your PIN:");
+			string pin = Console.ReadLine ();
+			// アクセストークンを取得する
+			auth.GetAccessToken (pin);
 
-
-
+			// 結果を表示する
+			Console.WriteLine ("Your AccessToken: " + auth.AccessToken);
+			Console.WriteLine ("Your AccessTokenSecret: " + auth.AccessTokenSecret);
+			Console.WriteLine ("Your UserId: " + auth.UserId);
+			Console.WriteLine ("Your ScreenName: " + auth.ScreenName);
+			//=====================================================================================
 
 			//====================================================
 			//debug
 			Console.WriteLine ("debug start! Enter return key!");
-			Console.ReadKey ();
+			Console.ReadKey (); 
+			Console.Write ("<===== This is tiny Twitter client on console =====>\n");
 
 			TwitterConnector tc = new TwitterConnector (
 				                      auth.ConsumerKey, auth.ConsumerSecret, auth.AccessToken, 
 				                      auth.AccessTokenSecret, auth.UserId, auth.ScreenName);
-			var usrTl = tc.GetUsrTimeline ("nanjolno");
-			var homeTl = tc.GetHomeTimeline ();
-			var idTweet = tc.GetTweet (674435882917584896);
-			var myMentions = tc.GetMentionsTimeline ();
-			string random = Convert.ToBase64String (new ASCIIEncoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
-			tc.Update ("投稿form TwitterAPI v1.1 " + random);
+			
+			Console.WriteLine ("Enter some screen name you want to get its Tweets");
+			Console.WriteLine ("e.g)@:muji_net");
+			Console.Write ("@:"); 
+			string sn = Console.ReadLine ();
+			tc.GetUsrTimeline (sn);
+			Console.WriteLine ("=====================================================================");
+			Console.WriteLine ("Completed getting his Tweets!");
+			Console.WriteLine ("Enter return key!\n");
+			Console.ReadKey ();
+
+			Console.WriteLine ("Please enter return key to start to get your home timeline");
+			Console.ReadKey ();
+			tc.GetHomeTimeline ();
+			Console.WriteLine ("=====================================================================");
+			Console.WriteLine ("Completed getting your home timeline!");
+			Console.WriteLine ("Enter return key!\n");
+			Console.ReadKey ();
+
+			Console.WriteLine ("Enter some tweet id you want to get");
+			Console.WriteLine ("e.g)id:676591923931406340");
+			Console.Write ("tweet id:");
+			string id = Console.ReadLine ();
+			tc.GetTweet (long.Parse(id));
+			Console.WriteLine ("=====================================================================");
+			Console.WriteLine ("Completed getting tweet from tweet id!");
+			Console.WriteLine ("Enter return key!\n");
+			Console.ReadKey ();
+
+			Console.WriteLine ("Please enter return key to start to get your mentions timeline");
+			Console.ReadKey ();
+			tc.GetMentionsTimeline ();
+			Console.WriteLine ("=====================================================================");
+			Console.WriteLine ("Completed getting your mentions timeline!");
+			Console.WriteLine ("Enter return key!\n");
+			Console.ReadKey ();
+
+			Console.WriteLine ("Please enter some text to post. (Caution!: This text will post your time line!)");
+			Console.Write ("text:");
+			Console.ReadKey (); 
+			string text = Console.ReadLine ();
+			tc.Update (text);
+			Console.WriteLine ("=====================================================================");
+			Console.WriteLine ("Completed posting!");
+			Console.WriteLine ("Enter return key!\n");
+			Console.ReadKey ();
 
 			//debug
 			Console.WriteLine ("debug end! Enter return key!");
 			Console.ReadKey ();
 			//=====================================================
-
-
-
-			//debug
-			Console.ReadKey ();
 		}
 	}
 }

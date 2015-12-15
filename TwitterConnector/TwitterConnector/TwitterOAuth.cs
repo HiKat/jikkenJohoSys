@@ -9,14 +9,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
-
-//## 留意点
-//* 署名作成時のパラメータはキーがアルファベット順に並んでいる必要がある
-//* callbackURLを指定している場合はpinコード画面が出ずレスポンスからpinを入手する必要がある.
+//* 署名作成時のパラメータはキーがアルファベット順に並んでいる必要があります
+//* callbackURLを指定している場合はpinコード画面が出ずレスポンスからpinを入手する必要があります.
 //* AccessToken及びAccessTokenSecretは、デベロッパは公開せずwebアプリケーションのユーザ
 //に取得してもらう.
 //* URLエンコードについてはUri.EscapeDataStringを使用
-//（HttpUtility.UrlEncodeメソッドでは%20が+に変換されるなどの危険性）
+//（HttpUtility.UrlEncodeメソッドでは%20が+に変換されるなど）
 //* レスポンスの仕様変更に注意
 
 
@@ -24,9 +22,6 @@ namespace TwitterOAuth
 {
 	public class Auth
 	{
-		//
-		//
-		//
 		//タイムスタンプ生成====================================
 		//UNIXエポック時刻
 		private readonly static DateTime dtUnixEpoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -42,8 +37,7 @@ namespace TwitterOAuth
 		//ランダム文字列生成====================================
 		protected string GenNonce ()
 		{
-			string result = Convert.ToBase64String (new ASCIIEncoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
-			string res2 = Convert.ToBase64String (new UTF8Encoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
+			string result = Convert.ToBase64String (new UTF8Encoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
 			return result;
 		}
 		//===================================================
@@ -93,10 +87,28 @@ namespace TwitterOAuth
 			return signature;
 		}
 		//=========================================================================================================
-		//
-		//
-		//
 
+		//Authヘッダー作成===========================================================================================
+		protected string GenAuthHeader(string consumerKey, string oauthNonce, string signature, string timeStamp, string accessToken){
+			string authHeader = string.Format (
+				"OAuth oauth_consumer_key=\"{0}\", " +
+				"oauth_nonce=\"{1}\", " +
+				"oauth_signature=\"{2}\", " +
+				"oauth_signature_method=\"{3}\", " +
+				"oauth_timestamp=\"{4}\", " +
+				"oauth_token=\"{5}\", " +
+				"oauth_version=\"{6}\""
+				//APIKeyなども形式的に念のため全てURLエンコードする
+				, Uri.EscapeDataString (consumerKey)
+				, Uri.EscapeDataString (oauthNonce)
+				, Uri.EscapeDataString (signature)
+				, Uri.EscapeDataString ("HMAC-SHA1")
+				, Uri.EscapeDataString (timeStamp)
+				, Uri.EscapeDataString (accessToken)
+				, Uri.EscapeDataString ("1.0"));
+			return authHeader;
+		}
+		//=========================================================================================================
 
 		//プロパティ===========================================
 		public string ConsumerKey { get; protected set; }
@@ -192,8 +204,9 @@ namespace TwitterOAuth
 			//=============================================================
 
 			//debug
-			Console.WriteLine ("get request token response = " + response);
-			//レスポンス例（こうなっていないとずれる可能性）
+			//Console.WriteLine ("get request token response = " + response);
+
+			//レスポンス例（こうなっていないとずれる可能性がある）
 			//oauth_token=「リクエストトークン」&oauth_token_secret=「シークレット」&oauth_callback_confirmed=true
 			//キーと値の組が3つ
 
@@ -267,8 +280,9 @@ namespace TwitterOAuth
 			//=============================================================
 
 			//debug
-			Console.WriteLine ("get access token response = " + response);
-			//レスポンス例（こうなっていないとずれる可能性）
+			//Console.WriteLine ("get access token response = " + response);
+
+			//レスポンス例（こうなっていないとずれる可能性がある）
 			//oauth_token=「アクセストークン」&oauth_token_secret=「シークレット」&user_id=「ID」&screen_name=「Name」&x_auth_expires=0
 			//キーと値の組が5つ
 
