@@ -3,9 +3,18 @@ using System.Text;
 using TwitterOAuth;
 using TwitterTweetJson;
 using TwitterApi;
+//留意点
+//* Newtonsoft.Json.dllはJSON.NETの外部ライブラリです.
+//* TwiiterOAuth.csはTwitterAPIを使用する際にOAuth認証を通過するための
+//メソッドやプロパティを揃えたクラスです
+//* TwitterApi.csはTwitterAPIを使用するためのクラスで、
+//認証はTwitterOAuth.cs内のAuthクラスを継承したTwitterConnectorクラスの
+//インスタンスを使用することでパスすることができます.
+//* TwitterJson.csはツイート情報のJSONオブジェクトをC#のクラスの形式にして書いたものです.
 
-//コンソール上で動作する簡単なTwitterクライアントです
+//これはコンソール上で動作する簡単なTwitterクライアントです
 //最低限の実装なのでtry~catchの類は書いていません.
+//存在しないTweetID等を入力すると当然エラーが発生します.
 namespace Main
 {
 	
@@ -43,7 +52,7 @@ namespace Main
 			//debug
 			Console.WriteLine ("debug start! Enter return key!");
 			Console.ReadKey (); 
-			Console.Write ("<===== This is tiny Twitter client on console =====>\n");
+			Console.Write ("<===== This is a tiny Twitter client on console =====>\n");
 
 			TwitterConnector tc = new TwitterConnector (
 				                      auth.ConsumerKey, auth.ConsumerSecret, auth.AccessToken, 
