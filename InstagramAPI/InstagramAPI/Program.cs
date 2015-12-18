@@ -1,307 +1,288 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Configuration;
-using System.Text;
-using System.Web;
-using System.Net;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.Http;
-//* 署名作成時のパラメータはキーがアルファベット順に並んでいる必要があります
-//* callbackURLを指定している場合はpinコード画面が出ずレスポンスからpinを入手する必要があります.
-//* URLエンコードについてはUri.EscapeDataStringを使用
-//（HttpUtility.UrlEncodeメソッドでは%20が+に変換されるなど）
-//* レスポンスの仕様変更に注意
+using System.Web;
+using Newtonsoft.Json;
+using InstagramJsonUser;
+using InstagramJsonMedia;
+using InstagramJsonLocation;
 
 
-namespace TwitterOAuth
+//留意点
+//2015年11月17日以降より
+//app審査前の段階ではsandboxに招待されたユーザのコンテンツしか取得できなくなりました.
+//実際に使用するには開発後に取得可能コンテンツのスコープにpublic_contentを
+//追加申請する必要があります.
+namespace ConsoleApplication1
 {
-	public class Auth
+	public class Program
 	{
-		//タイムスタンプ生成====================================
-		//UNIXエポック時刻
-		private readonly static DateTime dtUnixEpoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		static void Main ()
+		{	
+//			//アクセストークン取得（リダイレクト先のアドレスからコピー）
+//			string getATUrl = "https://api.instagram.com/oauth/authorize/";
+//			string getATParam = "?client_id=20ef08d527854613983922dac131c7cd&redirect_uri=http://www.yahoo.co.jp/&response_type=token";
+//			string getATScope = "&scope=basic+likes+comments+relationships+public_content";
+//			//このURLが認証画面のURL
+//			string url = getATUrl + getATParam + getATScope;
 
-		protected string GenTimestamp ()
-		{
-			//現在時刻からUNIXエポック時刻を引く
-			TimeSpan ts = DateTime.UtcNow - dtUnixEpoch;
-			return Convert.ToInt64 (ts.TotalSeconds).ToString ();
+			//ここからリダイレクトURLをパースしてアクセストークンを取得
+			//実際のアドレスは（サンドボックス内でのデバッグ用/悪用厳禁）
+			//https://api.instagram.com/oauth/authorize/?client_id=b440a5f469e040b487afbefdb433c279&redirect_uri=https://github.com/HiKat/jikkenJohoSys/blob/master/InstagramAPI/README.txt&response_type=token&scope=basic+likes+comments+relationships+public_content
+			//取得したアクセストークンは（サンドボックス内でのデバッグ用/悪用厳禁）
+			string accessToken = "588760295.b440a5f.2a69bec450c94e66b26dc1b1e078df0f";
+			InstagramConnetor ic = new InstagramConnetor (accessToken);
+			string myID = "588760295";
+			double lat = 35.696668;
+			double lng = 139.769054;
+			int dis = 300;
+
+			double lat2 = 34.691197;
+			double lng2 = 135.516443;
+			int dis2 = 3000;
+			string myMediaId = "1066618951385260380_588760295";
+			long myLocationId = 560621;
+
+			ic.GetUsers (myID);
+			ic.GetUsersSearch ("katsumi");
+			ic.GetMedia (myMediaId);
+			ic.GetMediaSearch (lat, lng, dis);
+			ic.GetMediaSearch (lat2, lng2, dis2);
+			ic.GetLocations (myLocationId);
+			ic.GetLocationsMediaRecent (myLocationId);
+			ic.GetLocationsSearch (lat, lng, dis);
+
+			//debug
+			Console.ReadKey ();
 		}
-		//===================================================
+	}
 
-		//ランダム文字列生成====================================
-		protected string GenNonce ()
+	public class InstagramConnetor
+	{
+		//============================================================================
+		public InstagramConnetor (string accessToken)
 		{
-			string result = Convert.ToBase64String (new UTF8Encoding ().GetBytes (DateTime.Now.Ticks.ToString ()));
-			return result;
-		}
-		//===================================================
-
-		//ディクショナリ型のパラメータを"&キー=値"のクエリに変換するメソッド===============
-		//なお署名作成時のパラメータはアルファベット順である必要があるためSortedDictionary型
-		//クエリ列はアルファベット順である必要はなし
-		protected string JoinParameters (IDictionary<string, string> parameters)
-		{
-			StringBuilder result = new StringBuilder ();
-			//該当パラメータが先頭かどうかを判断
-			bool first = true;
-			foreach (var parameter in parameters) {
-				if (first) {
-					//先頭のときはそのまま（&を入れない）
-					first = false;
-				} else {
-					//先頭でないときは&をはさむ
-					result.Append ('&');
-				}
-				//キーと値を=でつなぐ
-				result.Append (parameter.Key);
-				result.Append ('=');
-				result.Append (parameter.Value);
-			}
-			return result.ToString ();
-		}
-		//========================================================================
-
-		//署名作成==================================================================================================
-		protected string GenSignature (
-			string method, string url, SortedDictionary<string, string> parameters, string conSec, string token)
-		{
-			//署名データ
-			string signatureData = 
-				method + "&" +
-				Uri.EscapeDataString (url) + "&" +
-				Uri.EscapeDataString (JoinParameters (parameters));	
-			//署名キー
-			string signatureKey = Uri.EscapeDataString (conSec) + "&" + Uri.EscapeDataString (token);
-			//ハッシュ関数生成
-			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-			//暗号化
-			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-			//ベース64エンコード
-			string signature = Convert.ToBase64String (bArray);
-			return signature;
-		}
-		//=========================================================================================================
-
-		//Authヘッダー作成===========================================================================================
-		protected string GenAuthHeader(string consumerKey, string oauthNonce, string signature, string timeStamp, string accessToken){
-			string authHeader = string.Format (
-				"OAuth oauth_consumer_key=\"{0}\", " +
-				"oauth_nonce=\"{1}\", " +
-				"oauth_signature=\"{2}\", " +
-				"oauth_signature_method=\"{3}\", " +
-				"oauth_timestamp=\"{4}\", " +
-				"oauth_token=\"{5}\", " +
-				"oauth_version=\"{6}\""
-				//APIKeyなども形式的に念のため全てURLエンコードする
-				, Uri.EscapeDataString (consumerKey)
-				, Uri.EscapeDataString (oauthNonce)
-				, Uri.EscapeDataString (signature)
-				, Uri.EscapeDataString ("HMAC-SHA1")
-				, Uri.EscapeDataString (timeStamp)
-				, Uri.EscapeDataString (accessToken)
-				, Uri.EscapeDataString ("1.0"));
-			return authHeader;
-		}
-		//=========================================================================================================
-
-		//プロパティ===========================================
-		public string ConsumerKey { get; protected set; }
-
-		public string ConsumerSecret { get; protected set; }
-
-		public string RequestToken { get; protected set; }
-
-		public string RequestTokenSecret { get; protected set; }
-
-		public string AccessToken { get; protected set; }
-
-		public string AccessTokenSecret { get; protected set; }
-
-		public string UserId { get; protected set; }
-
-		public string ScreenName { get; protected set; }
-		//===================================================
-
-
-		//コンストラクタ================================================================
-		public Auth (string consumerKey, string consumerSecret)
-		{
-			ServicePointManager.Expect100Continue = false;
-			ConsumerKey = consumerKey;
-			ConsumerSecret = consumerSecret;
-		}
-
-		public Auth (
-			string consumerKey, string consumerSecret, string accessToken, 
-			string accessTokenSecret, string userId, string screenName)
-		{
-			ServicePointManager.Expect100Continue = false;
-			ConsumerKey = consumerKey;
-			ConsumerSecret = consumerSecret;
 			AccessToken = accessToken;
-			AccessTokenSecret = accessTokenSecret;
-			UserId = userId;
-			ScreenName = screenName;
 		}
-		//=============================================================================
 
-		//リクエストトークン取得=====================================================================
-		public void GetRequestToken ()
+		public string AccessToken{ get; protected set; }
+
+		//Getメソッドで送信を行う
+		public string HttpGet (string url)
 		{
-			//ランダム文字列生成
-			string oauthNonce = GenNonce ();
-			//タイムスタンプ生成
-			string timeStamp = GenTimestamp ();
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create (url);
+			req.Method = "GET";
+			req.ContentType = "application/x-www-form-urlencoded";
+			HttpWebResponse res = (HttpWebResponse)req.GetResponse ();
+			Stream resStream = res.GetResponseStream ();
+			StreamReader sr = new StreamReader (resStream);
+			//JSONデータを取得
+			return sr.ReadToEnd ();
+		}
+		//===========================================================================
 
-			//署名作成=============================================================================================
 
-			//パラメータ==================
-			SortedDictionary<string, string> parameters = new SortedDictionary<string, string> ();
-			parameters.Add ("oauth_consumer_key", ConsumerKey);
-			parameters.Add ("oauth_signature_method", "HMAC-SHA1");
-			parameters.Add ("oauth_timestamp", timeStamp);
-			parameters.Add ("oauth_nonce", oauthNonce);
-			parameters.Add ("oauth_version", "1.0");
-			//==========================
-
-			//==========================
-			string signature = GenSignature ("GET", "https://api.twitter.com/oauth/request_token", parameters, ConsumerSecret, "");
-
-			//			//<参考> 署名作成の中身======
-			//			//署名データ
-			//			string signatureData = 
-			//				"GET" + "&" +
-			//				Uri.EscapeDataString ("https://api.twitter.com/oauth/request_token") + "&" +
-			//				Uri.EscapeDataString (JoinParameters (parameters));	
-			//			//署名キー
-			//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&";
-			//			//ハッシュ関数生成
-			//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-			//			//暗号化
-			//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-			//			//ベース64エンコード
-			//			string signature = Convert.ToBase64String (bArray);
-			//			//=========================
-			//==========================
-
-			//署名もパラメータに追加
-			parameters.Add ("oauth_signature", Uri.EscapeDataString (signature));
-
-			//get送信=======================================================
-			WebRequest req = WebRequest.Create ("https://api.twitter.com/oauth/request_token?" + JoinParameters (parameters));
-			WebResponse res = req.GetResponse ();
-			Stream stream = res.GetResponseStream ();
-			StreamReader reader = new StreamReader (stream);
-			string response = reader.ReadToEnd ();
-			reader.Close ();
-			stream.Close ();
-			//=============================================================
+		//===========================================================================
+		//get_users
+		//IDで指定した任意のユーザについての情報を取得する
+		public User GetUsers (string id)
+		{
+			string url = "https://api.instagram.com/v1/users/" + id + "/?access_token=" + AccessToken;
+			//JSONデータを取得
+			string result = HttpGet (url);
+			//JSONデータのパース
+			var root = JsonConvert.DeserializeObject<RootObjectOneUser> (result);
+			User usr = new User (root.data.username, root.data.id);
 
 			//debug
-			//Console.WriteLine ("get request token response = " + response);
+			Console.WriteLine ("username = " + root.data.username);
+			Console.WriteLine ("id = " + root.data.id);
+			Console.WriteLine ("");
 
-			//レスポンス例（こうなっていないとずれる可能性がある）
-			//oauth_token=「リクエストトークン」&oauth_token_secret=「シークレット」&oauth_callback_confirmed=true
-			//キーと値の組が3つ
-
-			//レスポンスをパース================================================================
-			// =と&で分割
-			char[] delimiterChars = { '=', '&' };
-			string[] ary = response.Split (delimiterChars, StringSplitOptions.RemoveEmptyEntries);
-			Dictionary<string, string> result = new Dictionary<string, string> ();
-			for (int i = 0; i < (3 - 1); i++) {
-				//i*2番目がキーで対応する値はi*2+1番目
-				result [ary [i * 2]] = ary [i * 2 + 1];
-			}
-			RequestToken = result ["oauth_token"];
-			RequestTokenSecret = result ["oauth_token_secret"];
-			//===============================================================================
-			//===================================================================================================
+			return usr;
 		}
-		//=======================================================================================
-
-
-		//アクセストークン取得==================================================================================
-		public void GetAccessToken (string pin)
+		//===========================================================================
+		//get_users_search
+		//クエリで検索したユーザについての情報を取得する
+		public List<User> GetUsersSearch (string query)
 		{
-			//ランダム文字列生成
-			string oauthNonce = GenNonce ();
-			//タイムスタンプ生成
-			string timeStamp = GenTimestamp ();
+			string url = "https://api.instagram.com/v1/users/search?q=" + query + "&access_token=" + AccessToken;
+			//JSONデータを取得
+			string result = HttpGet (url);
+			//JSONデータのパース
+			var root = JsonConvert.DeserializeObject<RootObjectUserList> (result);
+			List<User> resList = new List<User> ();
+			foreach (InstagramJsonUser.Datum d in root.data) {
+				User usr = new User (d.username, d.id);
+				resList.Add (usr);
 
-			//パラメータ==================
-			SortedDictionary<string, string> parameters = new SortedDictionary<string, string> ();
-			parameters.Add ("oauth_consumer_key", ConsumerKey);
-			parameters.Add ("oauth_signature_method", "HMAC-SHA1");
-			parameters.Add ("oauth_timestamp", timeStamp);
-			parameters.Add ("oauth_nonce", oauthNonce);
-			parameters.Add ("oauth_version", "1.0");
-			parameters.Add ("oauth_token", RequestToken);
-			parameters.Add ("oauth_verifier", pin);
-			//==========================
-
-			//==========================
-			string signature = GenSignature ("GET", "https://api.twitter.com/oauth/access_token", parameters, ConsumerSecret, RequestTokenSecret);
-
-			//			//<参考> 署名作成の中身======
-			//			//署名データ
-			//			string signatureData = 
-			//				"GET" + "&" +
-			//				Uri.EscapeDataString ("https://api.twitter.com/oauth/access_token") + "&" +
-			//				Uri.EscapeDataString (JoinParameters (parameters));	
-			//			//署名キー
-			//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&" + Uri.EscapeDataString (RequestTokenSecret);
-			//			//ハッシュ関数生成
-			//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-			//			//暗号化
-			//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-			//			//ベース64エンコード
-			//			string signature = Convert.ToBase64String (bArray);
-			//			//========================
-			//==========================
-
-			//署名もパラメータに追加
-			parameters.Add ("oauth_signature", Uri.EscapeDataString (signature));
-
-			//get送信=======================================================
-			WebRequest req = WebRequest.Create ("https://api.twitter.com/oauth/access_token?" + JoinParameters (parameters));
-			WebResponse res = req.GetResponse ();
-			Stream stream = res.GetResponseStream ();
-			StreamReader reader = new StreamReader (stream);
-			string response = reader.ReadToEnd ();
-			reader.Close ();
-			stream.Close ();
-			//=============================================================
+				//debug
+				Console.WriteLine ("username = " + d.username);
+				Console.WriteLine ("id = " + d.id);
+				Console.WriteLine ("");
+			}
+			return resList;
+		}
+		//===========================================================================
+		//get_media
+		//指定したメディアidのコンテンツを取得
+		//ビデオのidを指定した場合はJSONの形式が異なるためエラーが出るので注意
+		public Media GetMedia (string id)
+		{
+			string url = "https://api.instagram.com/v1/media/" + id + "?access_token=" + AccessToken;
+			//JSONデータを取得
+			string result = HttpGet (url);
+			//JSONデータのパース
+			var root = JsonConvert.DeserializeObject<RootObjectOneMedia> (result);
+			Media media = new Media (root.data.link, root.data.id);
 
 			//debug
-			//Console.WriteLine ("get access token response = " + response);
+			Console.WriteLine ("link = " + root.data.link);
+			Console.WriteLine ("id = " + root.data.id);
+			Console.WriteLine ("");
 
-			//レスポンス例（こうなっていないとずれる可能性がある）
-			//oauth_token=「アクセストークン」&oauth_token_secret=「シークレット」&user_id=「ID」&screen_name=「Name」&x_auth_expires=0
-			//キーと値の組が5つ
-
-			//レスポンスをパース================================================================
-			// =と&で分割
-			char[] delimiterChars = { '=', '&' };
-			string[] ary = response.Split (delimiterChars, StringSplitOptions.RemoveEmptyEntries);
-			Dictionary<string, string> result = new Dictionary<string, string> ();
-			for (int i = 0; i < (5 - 1); i++) {
-				//i*2番目がキーで対応する値がi*2+1番目
-				result [ary [i * 2]] = ary [i * 2 + 1];
-			}
-			//===============================================================================
-
-
-			//レスポンスをパースしてアクセストークン、アクセストークンシークレットを取り出す
-			//IDなどは任意
-			AccessToken = result ["oauth_token"];
-			AccessTokenSecret = result ["oauth_token_secret"];
-			UserId = result ["user_id"];
-			ScreenName = result ["screen_name"];
+			return media;
 		}
-		//===================================================================================================
+		//===========================================================================
+		//get_media_search
+		//緯度経度で指定した場所周辺でアップロードされたコンテンツを取得する
+		public List<Media> GetMediaSearch (double lat, double lng, int distance)
+		{
+			string url = 
+				"https://api.instagram.com/v1/media/search?lat=" + lat.ToString () + "&lng=" + lng.ToString () +
+				"&distance=" + distance.ToString () + "&access_token=" + AccessToken;
+			//JSONデータを取得
+			string result = HttpGet (url);
+			var root = JsonConvert.DeserializeObject<RootObjectMediaList> (result);
+			List<Media> resList = new List<Media> ();
+			foreach (InstagramJsonMedia.Datum d in root.data) {
+				Media media = new Media (d.link, d.id);
+				resList.Add (media);
+
+				//debug
+				Console.WriteLine ("link = " + d.link);
+				Console.WriteLine ("id = " + d.id);
+				Console.WriteLine ("");
+			}
+			return resList;
+		}
+		//===========================================================================
+		//get_locations
+		//location_idで指定した場所に関する情報を取得する
+		public Location GetLocations (long id)
+		{
+			string url = "https://api.instagram.com/v1/locations/" + id + "?access_token=" + AccessToken;
+			//JSONデータを取得
+			string result = HttpGet (url);
+			var root = JsonConvert.DeserializeObject<RootObjectOneLocation> (result);
+			Location loc = new Location (root.data.latitude, root.data.longitude, root.data.name, root.data.id);
+
+			//debug
+			Console.WriteLine ("lat = " + root.data.latitude);
+			Console.WriteLine ("lng = " + root.data.longitude);
+			Console.WriteLine ("name = " + root.data.name);
+			Console.WriteLine ("id = " + root.data.id);
+			Console.WriteLine ("");
+
+			return loc;
+		}
+		//===========================================================================
+		//get_locations_media_recent
+		//location_idで指定した場所でアップロードされたコンテンツを取得する
+		public List<Media> GetLocationsMediaRecent (long id)
+		{
+			string url = "https://api.instagram.com/v1/locations/" + id + "/media/recent?access_token=" + AccessToken;
+			//JSONデータを取得
+			string result = HttpGet (url);
+			var root = JsonConvert.DeserializeObject<RootObjectMediaListGLMR> (result);
+			List<Media> resList = new List<Media> ();
+			foreach (InstagramJsonMedia.Datum d in root.data) {
+				Media media = new Media (d.link, d.id);
+				resList.Add (media);
+
+				//debug
+				Console.WriteLine ("link = " + d.link);
+				Console.WriteLine ("id = " + d.id);
+				Console.WriteLine ("");
+			}
+			return resList;
+		}
+		//===========================================================================
+		//get_locations_search
+		//緯度軽度で指定した場所周辺につけられたidやその他の情報を取得する
+		public List<Location> GetLocationsSearch (double lat, double lng, int distance)
+		{
+			string url = 
+				"https://api.instagram.com/v1/locations/search?lat=" + lat.ToString () +
+				"&lng=" + lng.ToString () + "&distance=" + distance.ToString () + "&access_token=" + AccessToken;
+			//JSONデータを取得
+			string result = HttpGet (url);
+			var root = JsonConvert.DeserializeObject<RootObjectLocationList> (result);
+			List<Location> resList = new List<Location> ();
+			foreach (InstagramJsonLocation.Datum d in root.data) {
+				Location loc = new Location (d.latitude, d.longitude, d.name, d.id);
+
+				//debug
+				Console.WriteLine ("lat = " + d.latitude);
+				Console.WriteLine ("lng = " + d.longitude);
+				Console.WriteLine ("name = " + d.name);
+				Console.WriteLine ("id = " + d.id);
+				Console.WriteLine ("");
+			}
+			return resList;
+		}
+		//===========================================================================
+	}
+
+	//ユーザー情報を格納
+	public class User
+	{
+		public User (string userName, string id)
+		{
+			UserName = userName;
+			UserId = id;
+		}
+		//アカウント名
+		public string UserName{ get; protected set; }
+		//ユーザーID
+		public string UserId{ get; protected set; }
+	}
+
+	//メディア情報を格納
+	public class Media
+	{
+		public Media (string link, string id)
+		{
+			Link = link;
+			Id = id;
+		}
+		//アドレス
+		public string Link{ get; protected set; }
+		//メディアID
+		public string Id{ get; protected set; }
+	}
+
+	//ロケーション情報を格納
+	public class Location
+	{
+		public Location (double lat, double lng, string name, string id)
+		{
+			Latitude = lat;
+			Longitude = lng;
+			Name = name;
+			Id = id;
+		}
+		//緯度
+		public double Latitude{ get; protected set; }
+		//経度
+		public double Longitude{ get; protected set; }
+		//場所名
+		public string Name{ get; protected set; }
+		//ロケーションID
+		public string Id{ get; protected set; }
 	}
 }
+
