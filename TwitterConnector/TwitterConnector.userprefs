@@ -1,9 +1,9 @@
 ﻿<Properties StartupItem="TwitterConnector/TwitterConnector.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="TwitterConnector/Main.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="TwitterConnector/TwitterOAuth.cs">
     <Files>
       <File FileName="TwitterConnector/Main.cs" Line="1" Column="1" />
-      <File FileName="TwitterConnector/TwitterApi.cs" Line="1" Column="1" />
+      <File FileName="TwitterConnector/TwitterApi.cs" Line="416" Column="34" />
       <File FileName="TwitterConnector/TwitterOAuth.cs" Line="1" Column="1" />
       <File FileName="TwitterConnector/TwitterJson.cs" Line="1" Column="1" />
     </Files>

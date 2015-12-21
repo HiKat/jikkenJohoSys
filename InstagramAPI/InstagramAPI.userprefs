@@ -2,7 +2,8 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="InstagramAPI/Program.cs">
     <Files>
-      <File FileName="InstagramAPI/Program.cs" Line="56" Column="54" />
+      <File FileName="InstagramAPI/Program.cs" Line="12" Column="1" />
+      <File FileName="InstagramAPI/InstagramJson.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
