@@ -171,21 +171,21 @@ namespace TwitterOAuth
 			//==========================
 			string signature = GenSignature ("GET", "https://api.twitter.com/oauth/request_token", parameters, ConsumerSecret, "");
 
-//			//<参考> 署名作成の中身======
-//			//署名データ
-//			string signatureData = 
-//				"GET" + "&" +
-//				Uri.EscapeDataString ("https://api.twitter.com/oauth/request_token") + "&" +
-//				Uri.EscapeDataString (JoinParameters (parameters));	
-//			//署名キー
-//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&";
-//			//ハッシュ関数生成
-//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-//			//暗号化
-//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-//			//ベース64エンコード
-//			string signature = Convert.ToBase64String (bArray);
-//			//=========================
+			//			//<参考> 署名作成の中身======
+			//			//署名データ
+			//			string signatureData = 
+			//				"GET" + "&" +
+			//				Uri.EscapeDataString ("https://api.twitter.com/oauth/request_token") + "&" +
+			//				Uri.EscapeDataString (JoinParameters (parameters));	
+			//			//署名キー
+			//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&";
+			//			//ハッシュ関数生成
+			//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
+			//			//暗号化
+			//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
+			//			//ベース64エンコード
+			//			string signature = Convert.ToBase64String (bArray);
+			//			//=========================
 			//==========================
 
 			//署名もパラメータに追加
@@ -247,21 +247,21 @@ namespace TwitterOAuth
 			//==========================
 			string signature = GenSignature ("GET", "https://api.twitter.com/oauth/access_token", parameters, ConsumerSecret, RequestTokenSecret);
 
-//			//<参考> 署名作成の中身======
-//			//署名データ
-//			string signatureData = 
-//				"GET" + "&" +
-//				Uri.EscapeDataString ("https://api.twitter.com/oauth/access_token") + "&" +
-//				Uri.EscapeDataString (JoinParameters (parameters));	
-//			//署名キー
-//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&" + Uri.EscapeDataString (RequestTokenSecret);
-//			//ハッシュ関数生成
-//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-//			//暗号化
-//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-//			//ベース64エンコード
-//			string signature = Convert.ToBase64String (bArray);
-//			//========================
+			//			//<参考> 署名作成の中身======
+			//			//署名データ
+			//			string signatureData = 
+			//				"GET" + "&" +
+			//				Uri.EscapeDataString ("https://api.twitter.com/oauth/access_token") + "&" +
+			//				Uri.EscapeDataString (JoinParameters (parameters));	
+			//			//署名キー
+			//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&" + Uri.EscapeDataString (RequestTokenSecret);
+			//			//ハッシュ関数生成
+			//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
+			//			//暗号化
+			//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
+			//			//ベース64エンコード
+			//			string signature = Convert.ToBase64String (bArray);
+			//			//========================
 			//==========================
 
 			//署名もパラメータに追加

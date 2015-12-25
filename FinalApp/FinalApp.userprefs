@@ -1,0 +1,15 @@
+﻿<Properties StartupItem="FinalApp/FinalApp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="FinalApp/Program.cs">
+    <Files>
+      <File FileName="FinalApp/Program.cs" Line="73" Column="31" />
+      <File FileName="FinalApp/TwitterApi.cs" Line="14" Column="18" />
+      <File FileName="FinalApp/TwitterJson.cs" Line="8" Column="27" />
+      <File FileName="FinalApp/TwitterOAuth.cs" Line="309" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

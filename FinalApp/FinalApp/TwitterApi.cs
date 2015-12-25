@@ -5,13 +5,17 @@ using System.Text;
 using System.Web;
 using System.Net;
 using System.IO;
+using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
 using TwitterOAuth;
 using TwitterTweetJson;
+using TwitterUserJson;
 using TwitterApi;
+
+
 //* callbackURLを指定している場合はpinコード画面が出ずレスポンスからpinを入手する必要がある.
 //* TwitterAPIの仕様変更に伴いTweet内容の取得時にも署名の作成が必要となったため、
 //認証クラスのAuthクラスを継承してTwitterConnectorクラスを作成しています.
@@ -55,44 +59,44 @@ namespace TwitterApi
 			//==========================
 			string signature = GenSignature ("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json", parameters, ConsumerSecret, AccessTokenSecret);
 
-//			//<参考> 署名作成の中身======
-//			//署名データ
-//			string signatureData =
-//				"GET" + "&" +
-//				Uri.EscapeDataString ("https://api.twitter.com/1.1/statuses/user_timeline.json") + "&" +
-//				Uri.EscapeDataString (JoinParameters (parameters));
-//			//署名キー
-//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&" + Uri.EscapeDataString (AccessTokenSecret);
-//			//ハッシュ関数生成
-//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
-//			//暗号化
-//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
-//			//ベース64エンコード
-//			string signature = Convert.ToBase64String (bArray);
-//			//========================
+			//			//<参考> 署名作成の中身======
+			//			//署名データ
+			//			string signatureData =
+			//				"GET" + "&" +
+			//				Uri.EscapeDataString ("https://api.twitter.com/1.1/statuses/user_timeline.json") + "&" +
+			//				Uri.EscapeDataString (JoinParameters (parameters));
+			//			//署名キー
+			//			string signatureKey = Uri.EscapeDataString (ConsumerSecret) + "&" + Uri.EscapeDataString (AccessTokenSecret);
+			//			//ハッシュ関数生成
+			//			HMACSHA1 hMACSHA1 = new HMACSHA1 (Encoding.UTF8.GetBytes (signatureKey));
+			//			//暗号化
+			//			byte[] bArray = hMACSHA1.ComputeHash (Encoding.UTF8.GetBytes (signatureData));
+			//			//ベース64エンコード
+			//			string signature = Convert.ToBase64String (bArray);
+			//			//========================
 			//==========================
 
 			//===================================================================================================
 
 			string authHeader = GenAuthHeader (ConsumerKey, oauthNonce, signature, timeStamp, AccessToken);
-//			//ヘッダ作成====================================================
-//			string authHeader = string.Format (
-//				                    "OAuth oauth_consumer_key=\"{0}\", " +
-//				                    "oauth_nonce=\"{1}\", " +
-//				                    "oauth_signature=\"{2}\", " +
-//				                    "oauth_signature_method=\"{3}\", " +
-//				                    "oauth_timestamp=\"{4}\", " +
-//				                    "oauth_token=\"{5}\", " +
-//				                    "oauth_version=\"{6}\""
-//				//APIKeyなども形式的に念のため全てURLエンコードする
-//				, Uri.EscapeDataString (ConsumerKey)
-//				, Uri.EscapeDataString (oauthNonce)
-//				, Uri.EscapeDataString (signature)
-//				, Uri.EscapeDataString ("HMAC-SHA1")
-//				, Uri.EscapeDataString (timeStamp)
-//				, Uri.EscapeDataString (AccessToken)
-//				, Uri.EscapeDataString ("1.0"));
-//			//=============================================================
+			//			//ヘッダ作成====================================================
+			//			string authHeader = string.Format (
+			//				                    "OAuth oauth_consumer_key=\"{0}\", " +
+			//				                    "oauth_nonce=\"{1}\", " +
+			//				                    "oauth_signature=\"{2}\", " +
+			//				                    "oauth_signature_method=\"{3}\", " +
+			//				                    "oauth_timestamp=\"{4}\", " +
+			//				                    "oauth_token=\"{5}\", " +
+			//				                    "oauth_version=\"{6}\""
+			//				//APIKeyなども形式的に念のため全てURLエンコードする
+			//				, Uri.EscapeDataString (ConsumerKey)
+			//				, Uri.EscapeDataString (oauthNonce)
+			//				, Uri.EscapeDataString (signature)
+			//				, Uri.EscapeDataString ("HMAC-SHA1")
+			//				, Uri.EscapeDataString (timeStamp)
+			//				, Uri.EscapeDataString (AccessToken)
+			//				, Uri.EscapeDataString ("1.0"));
+			//			//=============================================================
 
 
 			//get送信=======================================================
@@ -112,9 +116,9 @@ namespace TwitterApi
 			resStream.Close ();
 			sr.Close ();
 			//JSONデータのパース
-			var root = JsonConvert.DeserializeObject<List<RootObject>> (resultJson);
+			var root = JsonConvert.DeserializeObject<List<TwitterTweetJson.RootObject>> (resultJson);
 			List<Tweet> resultList = new List<Tweet> ();
-			foreach (RootObject r in root) {
+			foreach (TwitterTweetJson.RootObject r in root) {
 
 				//debug
 				Console.WriteLine ("");
@@ -151,32 +155,9 @@ namespace TwitterApi
 			parameters.Add ("oauth_token", AccessToken);
 			parameters.Add ("include_rts", "1");
 			//==========================
-
 			string signature = GenSignature ("GET", "https://api.twitter.com/1.1/statuses/mentions_timeline.json", parameters, ConsumerSecret, AccessTokenSecret);
-
 			//===================================================================================================
-
 			string authHeader = GenAuthHeader (ConsumerKey, oauthNonce, signature, timeStamp, AccessToken);
-//			//ヘッダ作成===========================================================================================
-//			string authHeader = string.Format (
-//				                    "OAuth oauth_consumer_key=\"{0}\", " +
-//				                    "oauth_nonce=\"{1}\", " +
-//				                    "oauth_signature=\"{2}\", " +
-//				                    "oauth_signature_method=\"{3}\", " +
-//				                    "oauth_timestamp=\"{4}\", " +
-//				                    "oauth_token=\"{5}\", " +
-//				                    "oauth_version=\"{6}\""
-//				//APIKeyなども形式的に念のため全てURLエンコードする
-//				, Uri.EscapeDataString (ConsumerKey)
-//				, Uri.EscapeDataString (oauthNonce)
-//				, Uri.EscapeDataString (signature)
-//				, Uri.EscapeDataString ("HMAC-SHA1")
-//				, Uri.EscapeDataString (timeStamp)
-//				, Uri.EscapeDataString (AccessToken)
-//				, Uri.EscapeDataString ("1.0"));
-//			//===================================================================================================
-
-
 			//get送信=======================================================
 			//パラメータinclude_rts=1は推奨値
 			string reqUrl = "https://api.twitter.com/1.1/statuses/mentions_timeline.json?&include_rts=1";
@@ -195,9 +176,9 @@ namespace TwitterApi
 			resStream.Close ();
 			sr.Close ();
 			//JSONデータのパース
-			var root = JsonConvert.DeserializeObject<List<RootObject>> (resultJson);
+			var root = JsonConvert.DeserializeObject<List<TwitterTweetJson.RootObject>> (resultJson);
 			List<Tweet> resultList = new List<Tweet> ();
-			foreach (RootObject r in root) {
+			foreach (TwitterTweetJson.RootObject r in root) {
 
 				//debug
 				Console.WriteLine ("");
@@ -233,32 +214,9 @@ namespace TwitterApi
 			parameters.Add ("oauth_version", "1.0");
 			parameters.Add ("oauth_token", AccessToken);
 			//==========================
-
 			string signature = GenSignature ("GET", "https://api.twitter.com/1.1/statuses/home_timeline.json", parameters, ConsumerSecret, AccessTokenSecret);
-
 			//===================================================================================================
-
 			string authHeader = GenAuthHeader (ConsumerKey, oauthNonce, signature, timeStamp, AccessToken);
-//			//ヘッダ作成===========================================================================================
-//			string authHeader = string.Format (
-//				                    "OAuth oauth_consumer_key=\"{0}\", " +
-//				                    "oauth_nonce=\"{1}\", " +
-//				                    "oauth_signature=\"{2}\", " +
-//				                    "oauth_signature_method=\"{3}\", " +
-//				                    "oauth_timestamp=\"{4}\", " +
-//				                    "oauth_token=\"{5}\", " +
-//				                    "oauth_version=\"{6}\""
-//				//APIKeyなども形式的に念のため全てURLエンコードする
-//				, Uri.EscapeDataString (ConsumerKey)
-//				, Uri.EscapeDataString (oauthNonce)
-//				, Uri.EscapeDataString (signature)
-//				, Uri.EscapeDataString ("HMAC-SHA1")
-//				, Uri.EscapeDataString (timeStamp)
-//				, Uri.EscapeDataString (AccessToken)
-//				, Uri.EscapeDataString ("1.0"));
-//			//===================================================================================================
-
-
 			//get送信=======================================================
 			string reqUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json";
 			ServicePointManager.Expect100Continue = false;
@@ -276,9 +234,9 @@ namespace TwitterApi
 			resStream.Close ();
 			sr.Close ();
 			//JSONデータのパース
-			var root = JsonConvert.DeserializeObject<List<RootObject>> (resultJson);
+			var root = JsonConvert.DeserializeObject<List<TwitterTweetJson.RootObject>> (resultJson);
 			List<Tweet> resultList = new List<Tweet> ();
-			foreach (RootObject r in root) {
+			foreach (TwitterTweetJson.RootObject r in root) {
 
 				//debug
 				Console.WriteLine ("");
@@ -316,32 +274,9 @@ namespace TwitterApi
 			parameters.Add ("oauth_token", AccessToken);
 			parameters.Add ("id", id.ToString ());
 			//==========================
-
 			string signature = GenSignature ("GET", "https://api.twitter.com/1.1/statuses/show.json", parameters, ConsumerSecret, AccessTokenSecret);
-
 			//===================================================================================================
-
 			string authHeader = GenAuthHeader (ConsumerKey, oauthNonce, signature, timeStamp, AccessToken);
-//			//ヘッダ作成===========================================================================================
-//			string authHeader = string.Format (
-//				                    "OAuth oauth_consumer_key=\"{0}\", " +
-//				                    "oauth_nonce=\"{1}\", " +
-//				                    "oauth_signature=\"{2}\", " +
-//				                    "oauth_signature_method=\"{3}\", " +
-//				                    "oauth_timestamp=\"{4}\", " +
-//				                    "oauth_token=\"{5}\", " +
-//				                    "oauth_version=\"{6}\""
-//				//APIKeyなども形式的に念のため全てURLエンコードする
-//				, Uri.EscapeDataString (ConsumerKey)
-//				, Uri.EscapeDataString (oauthNonce)
-//				, Uri.EscapeDataString (signature)
-//				, Uri.EscapeDataString ("HMAC-SHA1")
-//				, Uri.EscapeDataString (timeStamp)
-//				, Uri.EscapeDataString (AccessToken)
-//				, Uri.EscapeDataString ("1.0"));
-//			//===================================================================================================
-
-
 			//get送信=======================================================
 			//パラメータinclude_rts=1は推奨値
 			string reqUrl = "https://api.twitter.com/1.1/statuses/show.json?&id=" + id.ToString ();
@@ -360,7 +295,7 @@ namespace TwitterApi
 			resStream.Close ();
 			sr.Close ();
 			//JSONデータのパース
-			var root = JsonConvert.DeserializeObject<RootObject> (resultJson);
+			var root = JsonConvert.DeserializeObject<TwitterTweetJson.RootObject> (resultJson);
 			User usr = new User (root.user.name, root.user.screen_name);
 			Tweet resultTweet = new Tweet ((long)root.id, root.text, usr);
 
@@ -397,32 +332,9 @@ namespace TwitterApi
 			parameters.Add ("oauth_token", AccessToken);
 			parameters.Add ("status", encodedTweet);
 			//==========================
-
 			string signature = GenSignature ("POST", "https://api.twitter.com/1.1/statuses/update.json", parameters, ConsumerSecret, AccessTokenSecret);
-
 			//===================================================================================================
-
 			string authHeader = GenAuthHeader (ConsumerKey, oauthNonce, signature, timeStamp, AccessToken);
-//			//ヘッダ作成===========================================================================================
-//			string authHeader = string.Format (
-//				                    "OAuth oauth_consumer_key=\"{0}\", " +
-//				                    "oauth_nonce=\"{1}\", " +
-//				                    "oauth_signature=\"{2}\", " +
-//				                    "oauth_signature_method=\"{3}\", " +
-//				                    "oauth_timestamp=\"{4}\", " +
-//				                    "oauth_token=\"{5}\", " +
-//				                    "oauth_version=\"{6}\""
-//				//APIKeyなども形式的に念のため全てURLエンコードする
-//				, Uri.EscapeDataString (ConsumerKey)
-//				, Uri.EscapeDataString (oauthNonce)
-//				, Uri.EscapeDataString (signature)
-//				, Uri.EscapeDataString ("HMAC-SHA1")
-//				, Uri.EscapeDataString (timeStamp)
-//				, Uri.EscapeDataString (AccessToken)
-//				, Uri.EscapeDataString ("1.0"));
-//			//===================================================================================================
-
-
 			//post送信======================================================
 			string reqUrl = "https://api.twitter.com/1.1/statuses/update.json";
 			Uri uri = new Uri (reqUrl);
@@ -439,6 +351,62 @@ namespace TwitterApi
 			//=============================================================
 		}
 		//===================================================================================================
+
+
+		//
+		//name：ScreenName
+		//返り値：
+		public List<UserEx> GetFriendsList (string name)
+		{
+			string oauthNonce = GenNonce ();
+			string timeStamp = GenTimestamp ();
+
+			//署名作成=============================================================================================
+			//パラメータ==================
+			SortedDictionary<string, string> parameters = new SortedDictionary<string, string> ();
+			parameters.Add ("oauth_consumer_key", ConsumerKey);
+			parameters.Add ("oauth_signature_method", "HMAC-SHA1");
+			parameters.Add ("oauth_timestamp", timeStamp);
+			parameters.Add ("oauth_nonce", oauthNonce);
+			parameters.Add ("oauth_version", "1.0");
+			parameters.Add ("oauth_token", AccessToken);
+			parameters.Add ("screen_name", name);
+			parameters.Add ("count", "200");
+			//==========================
+			string signature = GenSignature ("GET", "https://api.twitter.com/1.1/friends/list.json", parameters, ConsumerSecret, AccessTokenSecret);
+			//===================================================================================================
+			string authHeader = GenAuthHeader (ConsumerKey, oauthNonce, signature, timeStamp, AccessToken);
+			//get送信=======================================================
+			//パラメータinclude_rts=1は推奨値
+			string reqUrl = "https://api.twitter.com/1.1/friends/list.json?&screen_name=" + name + "&count=200";
+			ServicePointManager.Expect100Continue = false;
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create (reqUrl) as HttpWebRequest;
+			req.Method = "GET";
+			req.ContentType = "application/x-www-form-urlencoded";
+			req.Host = "api.twitter.com";
+			req.Headers.Add ("Authorization", authHeader);
+
+			HttpWebResponse res = (HttpWebResponse)req.GetResponse ();
+			Stream resStream = res.GetResponseStream ();
+			StreamReader sr = new StreamReader (resStream);
+			//JSONデータを取得
+			string resultJson = sr.ReadToEnd ();
+			resStream.Close ();
+			sr.Close ();
+			//JSONデータのパース
+			var root = JsonConvert.DeserializeObject<TwitterUserJson.RootObject> (resultJson);
+			List<UserEx> resultList = new List<UserEx> ();
+			foreach(TwitterUserJson.User u in root.users){
+				//debug
+				Console.WriteLine("@" + u.screen_name + "\n" + u.name + "\n" + u.description + "\n");
+				UserEx resUser = new UserEx(u.name, u.screen_name, u.description);
+				resultList.Add(resUser);
+			}
+			//=============================================================
+			return resultList;
+		}
+		//===================================================================================================
+
 
 	}
 
@@ -482,6 +450,21 @@ namespace TwitterApi
 
 		public string ScreenName{ get; private set; }
 
+	}
+		
+	public class UserEx : User 
+	{
+		//コンストラクタ
+		//name：ユーザ名
+		//screenName：ユーザのスクリーン名
+		//description : プロフィール文
+		public UserEx (string name, string screenName, string description) : base(name, screenName)
+		{
+			Description = description;
+		}
+
+		//プロパティ
+		public string Description{ get; private set; }
 	}
 
 }
