@@ -397,8 +397,10 @@ namespace TwitterApi
 			var root = JsonConvert.DeserializeObject<TwitterUserJson.RootObject> (resultJson);
 			List<UserEx> resultList = new List<UserEx> ();
 			foreach(TwitterUserJson.User u in root.users){
+				
 				//debug
-				Console.WriteLine("@" + u.screen_name + "\n" + u.name + "\n" + u.description + "\n");
+				//Console.WriteLine("@" + u.screen_name + "\n" + u.name + "\n" + u.description + "\n");
+
 				UserEx resUser = new UserEx(u.name, u.screen_name, u.description);
 				resultList.Add(resUser);
 			}

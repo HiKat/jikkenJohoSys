@@ -7,6 +7,7 @@ using TwitterOAuth;
 using TwitterTweetJson;
 using TwitterApi;
 using YahooMorphologicalAnalyzer;
+using System.Linq;
 
 
 //留意点
@@ -61,22 +62,28 @@ namespace Main
 //				auth.AccessTokenSecret, auth.UserId, auth.ScreenName);
 			//debug限定
 			TwitterConnector tc = new TwitterConnector (
-				CONSUMER_KEY, CONSUMER_SECRET, 
-				"4452190160-WVQ7leuqf48yruElrdZtbl2IeEcPE4JbNUqBrnp",
-				"hQvfQmZA13uNDEFWEf9HGb3GQflogJZlbWddnVqQQPaKP",
-				"4452190160",
-				"apiTestJohoSys");
+				                      CONSUMER_KEY, CONSUMER_SECRET, 
+				                      "4452190160-WVQ7leuqf48yruElrdZtbl2IeEcPE4JbNUqBrnp",
+				                      "hQvfQmZA13uNDEFWEf9HGb3GQflogJZlbWddnVqQQPaKP",
+				                      "4452190160",
+				                      "apiTestJohoSys");
 			
 			Console.WriteLine ("debug start! Enter return key!");
 			Console.ReadKey (); 
 			Console.Write ("<===== This is a tiny Twitter client on console =====>\n");
-			List<UserEx> res = new List<UserEx>();
-			res = tc.GetFriendsList ("shimizu111485");
-			foreach(UserEx u in res)
-			{
-				MakeWordList m = new MakeWordList (u.Description);
-				m.Analyse();
+			List<UserEx> res = new List<UserEx> ();
+			//res = tc.GetFriendsList ("shimizu111485");
+			res = tc.GetFriendsList ("apiTestJohoSys");
+			Dictionary<string, List<string>> allWordLists = new Dictionary<string, List<string>> ();
+			foreach (UserEx u in res) {
+				MakeWordList wl = new MakeWordList (u.Description);
+				//wl.Analyはユーザーのプロフィール文から名詞を抜き出してList<string>としたもの.
+				allWordLists.Add (u.ScreenName, wl.Analy ());
 			}
+			//allWrodListはクラスタリング対象の全てのユーザーのプロフィールから抽出した単語のリストList<List<string>>
+			MakeWordVec wv = new MakeWordVec (allWordLists);
+			//wv.MakeWordVecsListは個々のユーザーのプロフィールから作成したベクトルによるList<List<int>>
+			wv.MakeWordVecsList ();
 
 			//debug
 			Console.WriteLine ("debug end! Enter return key!");
@@ -84,28 +91,28 @@ namespace Main
 			//=====================================================
 		}
 	}
-
+	//=================================================================================
+	//一人のユーザーのプロフィール文から名詞を抜き出してAnaly()メソッドでList<string>を返す
 	public class MakeWordList
 	{
 		private string searchPos = "名詞";
 
 		//コンストラクタ
-		public MakeWordList(string str)
+		public MakeWordList (string str)
 		{
 			Text = str;
 		}
 
 		//プロパティ
-		public string Text{get; protected set;}
+		public string Text{ get; protected set; }
 
-		public List<string> Analyse()
+		public List<string> Analy ()
 		{
 			//形態素解析
 			//リクエストURL
 			string url = "http://jlp.yahooapis.jp/MAService/V1/parse";
 			Uri uri = new Uri (url);
 			string appId = "dj0zaiZpPWk3TUVNOTdKUmxNTSZzPWNvbnN1bWVyc2VjcmV0Jng9OGQ-";
-			//string sentence = Uri.EscapeUriString("9人や。うちを入れて。");
 			string sentence = Uri.EscapeUriString (Text);
 			string resultsParm = "ma";
 			//POSTリクエストを作成
@@ -143,25 +150,89 @@ namespace Main
 					ithWord = surface.Item (i).InnerText;
 					resultList.Add (ithWord);
 				}
-				//Morpheme ithResult = new Morpheme (surface.Item(i).InnerText, pos.Item(i).InnerText); 
-				//debug
-				//Console.WriteLine(surface.Item(i).InnerText);
-				//Console.WriteLine(pos.Item(i).InnerText);
 				i++;
 			}
-
 			//debug
-			bool first = true;
-			foreach(string s in resultList)
-			{
-				if (first) {
-					Console.Write ("\n\n" + s);
-					first = false;
-				} else {
-					Console.Write ("  " + s);
+//			bool first = true;
+//			foreach (string s in resultList) {
+//				if (first) {
+//					Console.Write ("\n\n>>" + s);
+//					first = false;
+//				} else {
+//					Console.Write ("  " + s);
+//				}
+//			}
+
+			return resultList;
+		}
+	}
+	//=================================================================================
+	public class MakeWordVec
+	{
+		//コンストラクタ
+		public MakeWordVec (Dictionary<string, List<string>> tgtWordLists)
+		{
+			TgtWordLists = tgtWordLists;
+		}
+		//プロパティ
+		public Dictionary<string, List<string>> TgtWordLists { get; protected set; }
+
+		public Dictionary<string, List<int>> MakeWordVecsList ()
+		{
+			List<string> wordUniListTemp = new List<string> ();
+			List<string> wordUniList = new List<string> ();
+
+			//出現する全ての単語を重複を許して列挙
+			foreach (KeyValuePair<string, List<string>> wl in TgtWordLists) {
+				wordUniListTemp.AddRange(wl.Value);
+			}
+			//wordUniListTempから重複を除いてwordUniListを作成
+			//debug
+			Console.WriteLine("全ユーザーのプロフィールから抽出された語>>");
+			foreach (string s in wordUniListTemp) {
+				if (!wordUniList.Contains (s)) {
+					wordUniList.Add (s);
+					//debug
+					Console.Write (s + " ");
 				}
+			}
+			Dictionary<string, List<int>> resultList = new Dictionary<string, List<int>> ();
+			//int i = 0;
+			foreach (KeyValuePair<string, List<string>> tgt in TgtWordLists) {
+				//lは一人のユーザープロフィールから作成した語ベクトル
+				List<int> l = new List<int> ();
+				//ベクトルの作成==========================
+				//debug
+				Console.WriteLine();
+				Console.WriteLine("@" + tgt.Key);
+				Console.Write ("{ ");
+				foreach (string str in wordUniList) {
+						if (tgt.Value.Contains (str)) {
+							l.Add (1);
+							//debug
+							Console.Write ("1 ");
+						} else {
+							l.Add (0);
+							//debug
+							Console.Write ("0 ");
+						}
+				}
+				//debug
+				Console.WriteLine ("}\n\n");
+				resultList.Add (tgt.Key, l);
+				//======================================
 			}
 			return resultList;
 		}
 	}
+	//=================================================================================
+	//=================================================================================
+	//=================================================================================
+//	public class Clustering{
+//		//コンストラクタ
+//		public Clustering(){
+//			
+//		}
+//		//プロパティ
+//	}
 }
