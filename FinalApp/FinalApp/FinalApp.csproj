@@ -45,7 +45,6 @@
     <Compile Include="TwitterApi.cs" />
     <Compile Include="TwitterJson.cs" />
     <Compile Include="TwitterOAuth.cs" />
-    <Compile Include="YahooMorphologicalAnalyzer.cs" />
     <Compile Include="ClassifyVector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

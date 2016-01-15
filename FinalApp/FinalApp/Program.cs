@@ -6,7 +6,6 @@ using System.Collections;
 using TwitterOAuth;
 using TwitterTweetJson;
 using TwitterApi;
-using YahooMorphologicalAnalyzer;
 using System.Linq;
 using Classify;
 
@@ -75,6 +74,7 @@ namespace Main
 			List<UserEx> res = new List<UserEx> ();
 			//res = tc.GetFriendsList ("shimizu111485");
 			res = tc.GetFriendsList ("apiTestJohoSys");
+			//res = tc.GetFriendsList("LoveLive_staff");
 			Dictionary<string, List<string>> allWordLists = new Dictionary<string, List<string>> ();
 			foreach (UserEx u in res) {
 				MakeWordList wl = new MakeWordList (u.Description);
@@ -84,12 +84,14 @@ namespace Main
 			//allWrodListはクラスタリング対象の全てのユーザーのプロフィールから抽出した単語のリストList<List<string>>
 			MakeWordVec wv = new MakeWordVec (allWordLists);
 			//wv.MakeWordVecsList()はそれぞれのベクトル名と値を登録したDictionary<string, List<int>>を返す.
-			ClassifyVector cv = new ClassifyVector (wv.MakeWordVecsList (), 20);
+			ClassifyVector cv = new ClassifyVector (wv.MakeWordVecsList (), 40);
 			//cv.HierarchicalClustering()はCluster[]を返す
 			foreach (Cluster c in cv.HierarchicalClustering()) {
+				Console.Write ("{");
 				foreach (string s in c.VecNamesArr()) {
 					Console.Write (s + " ");
 				}
+				Console.Write ("}");
 				Console.WriteLine ("\n\n");
 			}
 			//debug
@@ -184,7 +186,7 @@ namespace Main
 		//プロパティ
 		public Dictionary<string, List<string>> TgtWordLists { get; protected set; }
 
-		public Dictionary<string, List<int>> MakeWordVecsList ()
+		public Dictionary<string, List<double>> MakeWordVecsList ()
 		{
 			List<string> wordUniListTemp = new List<string> ();
 			List<string> wordUniList = new List<string> ();
@@ -203,11 +205,11 @@ namespace Main
 					Console.Write (s + " ");
 				}
 			}
-			Dictionary<string, List<int>> resultList = new Dictionary<string, List<int>> ();
+			Dictionary<string, List<double>> resultList = new Dictionary<string, List<double>> ();
 			//int i = 0;
 			foreach (KeyValuePair<string, List<string>> tgt in TgtWordLists) {
 				//lは一人のユーザープロフィールから作成した語ベクトル
-				List<int> l = new List<int> ();
+				List<double> l = new List<double> ();
 				//ベクトルの作成==========================
 				//debug
 				Console.WriteLine();
