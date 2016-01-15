@@ -8,6 +8,7 @@ using TwitterTweetJson;
 using TwitterApi;
 using YahooMorphologicalAnalyzer;
 using System.Linq;
+using Classify;
 
 
 //留意点
@@ -82,9 +83,15 @@ namespace Main
 			}
 			//allWrodListはクラスタリング対象の全てのユーザーのプロフィールから抽出した単語のリストList<List<string>>
 			MakeWordVec wv = new MakeWordVec (allWordLists);
-			//wv.MakeWordVecsListは個々のユーザーのプロフィールから作成したベクトルによるList<List<int>>
-			wv.MakeWordVecsList ();
-
+			//wv.MakeWordVecsList()はそれぞれのベクトル名と値を登録したDictionary<string, List<int>>を返す.
+			ClassifyVector cv = new ClassifyVector (wv.MakeWordVecsList (), 20);
+			//cv.HierarchicalClustering()はCluster[]を返す
+			foreach (Cluster c in cv.HierarchicalClustering()) {
+				foreach (string s in c.VecNamesArr()) {
+					Console.Write (s + " ");
+				}
+				Console.WriteLine ("\n\n");
+			}
 			//debug
 			Console.WriteLine ("debug end! Enter return key!");
 			Console.ReadKey ();
@@ -226,13 +233,4 @@ namespace Main
 		}
 	}
 	//=================================================================================
-	//=================================================================================
-	//=================================================================================
-//	public class Clustering{
-//		//コンストラクタ
-//		public Clustering(){
-//			
-//		}
-//		//プロパティ
-//	}
 }
