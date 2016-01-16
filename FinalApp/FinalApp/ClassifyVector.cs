@@ -36,6 +36,7 @@ namespace Classify
 		public Dictionary<string, List<double>> Vectors{ get; protected set; }
 		//階層クラスタリングの実行回数
 		public int Steps{ get; protected set; }
+
 		//全ベクトルのi番目のベクトル名を取得するメソッド
 		public string VecNameI (int i)
 		{
@@ -74,12 +75,12 @@ namespace Classify
 		{
 			if(f == 0){
 			double tmp = 0;
-			for (int i = 0; i < c1.ClusterSize; i++) {
-				for (int j = 0; j < c2.ClusterSize; j++) {
+				for (int i = 0; i < c1.ClusterSize(); i++) {
+					for (int j = 0; j < c2.ClusterSize(); j++) {
 					tmp += DisVec (c1.VecValI (i), c2.VecValI (j));
 				}
 			}
-			double result = (tmp / (c1.ClusterSize * c2.ClusterSize));
+				double result = (tmp / (c1.ClusterSize() * c2.ClusterSize()));
 			return result;
 			}
 			if (f == 1) {
@@ -93,7 +94,7 @@ namespace Classify
 		//2つのクラスタをマージして1つのクラスタにするメソッド
 		public Cluster MergeCluster (Cluster c1, Cluster c2)
 		{
-			Dictionary<string, List<double>> res = new Dictionary<string, List<double>> (c1.ClusterSize + c2.ClusterSize);
+			Dictionary<string, List<double>> res = new Dictionary<string, List<double>> (c1.ClusterSize() + c2.ClusterSize());
 			//クラスタ1を追加
 			foreach (KeyValuePair<string, List<double>> kvp in c1.Data) {
 				res.Add (kvp.Key, kvp.Value);
@@ -179,7 +180,7 @@ namespace Classify
 			}
 			int yet = 100 - done;
 			string bar = "[ ";
-			for(int i = 0; i < done; i++){
+			for(int i = 0; i < (done-1); i++){
 				bar = string.Format (bar + "=");
 			}
 			for (int i = 0; i < yet; i++) {
@@ -198,14 +199,16 @@ namespace Classify
 		private string[] vecNames;
 		//ベクトル本体の配列
 		private List<double>[] vecData;
+		//クラスターサイズ(要素数)
+		private int clusterSize;
 
 		//コンストラクタ
 		public Cluster (Dictionary<string, List<double>> data)
 		{
 			Data = data;	
-			ClusterSize = data.Count;
-			vecNames = new string[ClusterSize];
-			vecData = new List<double>[ClusterSize];
+			clusterSize = data.Count;
+			vecNames = new string[clusterSize];
+			vecData = new List<double>[clusterSize];
 			int i = 0;
 			foreach (KeyValuePair<string, List<double>> kvp in data) {
 				vecNames [i] = kvp.Key;
@@ -217,10 +220,12 @@ namespace Classify
 		//プロパティ
 		//元のデータ
 		public Dictionary<string, List<double>> Data{ get; protected set; }
-		//クラスタのサイズ(要素数)を取得するプロパティ
-		public int ClusterSize{ get; protected set; }
 
 
+		//クラスターのクラスタのサイズ(要素数)を返すメソッド
+		public int ClusterSize(){
+			return clusterSize;
+		}
 		//2つのList<double>で表されたベクトルの和をとるメソッド
 		private List<double> AddVec (List<double> vec1, List<double> vec2)
 		{
@@ -231,7 +236,6 @@ namespace Classify
 			}
 			return res;
 		}
-
 		//全ベクトルのi番目のベクトル名を取得するメソッド
 		public string VecNameI (int i)
 		{
@@ -260,7 +264,7 @@ namespace Classify
 				foreach(List<double> v in vecData){
 					tmp += tmp + v[i];
 				}
-				g[i] = tmp / ClusterSize;
+				g[i] = tmp / clusterSize;
 			}
 			return g;
 		}

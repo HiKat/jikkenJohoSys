@@ -360,6 +360,7 @@ namespace TwitterApi
 		{
 			string oauthNonce = GenNonce ();
 			string timeStamp = GenTimestamp ();
+			string friendsCount = "100";
 
 			//署名作成=============================================================================================
 			//パラメータ==================
@@ -371,14 +372,14 @@ namespace TwitterApi
 			parameters.Add ("oauth_version", "1.0");
 			parameters.Add ("oauth_token", AccessToken);
 			parameters.Add ("screen_name", name);
-			parameters.Add ("count", "200");
+			parameters.Add("count", friendsCount);
 			//==========================
 			string signature = GenSignature ("GET", "https://api.twitter.com/1.1/friends/list.json", parameters, ConsumerSecret, AccessTokenSecret);
 			//===================================================================================================
 			string authHeader = GenAuthHeader (ConsumerKey, oauthNonce, signature, timeStamp, AccessToken);
 			//get送信=======================================================
 			//パラメータinclude_rts=1は推奨値
-			string reqUrl = "https://api.twitter.com/1.1/friends/list.json?&screen_name=" + name + "&count=200";
+			string reqUrl = "https://api.twitter.com/1.1/friends/list.json?&screen_name=" + name + "&count="+ friendsCount;
 			ServicePointManager.Expect100Continue = false;
 			HttpWebRequest req = (HttpWebRequest)WebRequest.Create (reqUrl) as HttpWebRequest;
 			req.Method = "GET";

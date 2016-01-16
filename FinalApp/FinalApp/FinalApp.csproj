@@ -46,6 +46,7 @@
     <Compile Include="TwitterJson.cs" />
     <Compile Include="TwitterOAuth.cs" />
     <Compile Include="ClassifyVector.cs" />
+    <Compile Include="WordVector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
