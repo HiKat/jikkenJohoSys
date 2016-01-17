@@ -1,13 +1,10 @@
 ﻿<Properties StartupItem="FinalApp/FinalApp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="FinalApp/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="FinalApp/WordVector.cs">
     <Files>
-      <File FileName="FinalApp/Program.cs" Line="231" Column="40" />
-      <File FileName="FinalApp/TestSimilarity.cs" Line="1" Column="1" />
-      <File FileName="FinalApp/TwitterOAuth.cs" Line="1" Column="1" />
-      <File FileName="FinalApp/TwitterApi.cs" Line="1" Column="1" />
-      <File FileName="FinalApp/TwitterJson.cs" Line="1" Column="1" />
-      <File FileName="FinalApp/YahooMorphologicalAnalyzer.cs" Line="1" Column="1" />
+      <File FileName="FinalApp/Program.cs" Line="98" Column="34" />
+      <File FileName="FinalApp/ClassifyVector.cs" Line="259" Column="35" />
+      <File FileName="FinalApp/WordVector.cs" Line="125" Column="17" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

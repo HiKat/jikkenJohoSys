@@ -22,6 +22,7 @@ namespace ConsoleApplication1
 	{
 		static void Main ()
 		{	
+			//CLIENT ID 20ef08d527854613983922dac131c7cd
 //			//アクセストークン取得（リダイレクト先のアドレスからコピー）
 //			string getATUrl = "https://api.instagram.com/oauth/authorize/";
 //			string getATParam = "?client_id=20ef08d527854613983922dac131c7cd&redirect_uri=http://www.yahoo.co.jp/&response_type=token";
